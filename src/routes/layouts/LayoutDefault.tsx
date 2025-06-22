@@ -3,11 +3,9 @@ import Header from "../../components/header/Header";
 
 export default function LayoutDefault() {
   return (
-    <div>
+    <div className="h-full">
       <Header />
-      <div className="flex">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 }

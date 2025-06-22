@@ -2,7 +2,9 @@
 @import "tailwindcss";
 
 html,
-body {
+body,
+#root {
+  background-color: #f9fafb;
   font-family: "Quicksand";
   height: 100%;
   width: 100%;
