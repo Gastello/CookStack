@@ -8,7 +8,7 @@ export default function Home() {
         <Link to="/about">
           <div className="bg-white rounded-2xl shadow-sm py-[20px] px-[36px] hover:text-[#15803D] hover:bg-[#F0FDF4]">
             <div className="mb-[10px]">
-              <Emoji name={EMOJI.eyes} size="128px" />
+              <Emoji name={EMOJI.eyes} size="96px" />
             </div>
             <div className="text-[18px]/[22px] font-[500] text-center">
               About
@@ -18,7 +18,7 @@ export default function Home() {
         <Link to="/login">
           <div className="bg-white rounded-2xl shadow-sm py-[20px] px-[36px] hover:text-[#15803D] hover:bg-[#F0FDF4]">
             <div className="mb-[10px]">
-              <Emoji name={EMOJI.door} size="128px" />
+              <Emoji name={EMOJI.door} size="96px" />
             </div>
             <div className="text-[18px]/[22px] font-[500] text-center">
               Login
@@ -28,7 +28,7 @@ export default function Home() {
         <Link to="/register">
           <div className="bg-white rounded-2xl shadow-sm py-[20px] px-[36px] hover:text-[#15803D] hover:bg-[#F0FDF4]">
             <div className="mb-[10px]">
-              <Emoji name={EMOJI.key} size="128px" />
+              <Emoji name={EMOJI.key} size="96px" />
             </div>
             <div className="text-[18px]/[22px] font-[500] text-center">
               Register

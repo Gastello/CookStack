@@ -6,7 +6,7 @@ export default function Sidebar() {
   return (
     <div className="max-w-[256px] w-full bg-white h-screen py-[30px] px-[24px]">
       <div>
-        <div className="flex justify-center">
+        <div className="px-[40px]">
           <Logo />
         </div>
         <div className="text-center text-[14px]/[24px] mb-[30px]">
