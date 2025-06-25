@@ -1,49 +1,22 @@
-import Button from "../components/button/Button";
-import Emoji, { EMOJI } from "../components/emoji/Emoji";
+import DashboardHeader from "../components/dashboardHeader/DashboardHeader";
+import { EMOJI } from "../components/emoji/Emoji";
+import EmptyDashboard from "../components/emptyDashboard/EmptyDashboard";
 
 export default function Menus() {
   return (
     <div className="flex flex-col h-full p-[30px]">
-      {/* Header  */}
-      <div className="flex justify-between">
-        <div>
-          <div className="font-semibold text-[20px]/[34px] text=[#1F2937]">
-            My Menus
-          </div>
-          <div className="text-[14px]/[24px] text-[#6B7280]">
-            Create and manage your meal plans
-          </div>
-        </div>
-        <div>
-          <Button
-            text="Create Menu"
-            icon={EMOJI.memo}
-            color="#F0FDF4"
-            textColor="#16A34A"
-          />
-        </div>
-      </div>
-      <div className="flex grow items-center justify-center">
-        <div className="max-w-[315px]">
-          <div className="text-center mb-[20px]">
-            <Emoji name={EMOJI.clipboard} size="50px" />
-          </div>
-          <div className="text-center mb-[5px] font-medium text-[17px]/[28px] text-[#1F2937]">
-            No menus yet
-          </div>
-          <div className="text-center mb-[25px] text-[14px]/[24px] text-[#6B7280]">
-            Start by creating your first menu to organize your meals
-          </div>
-          <div>
-            <Button
-              icon={EMOJI.dart}
-              textColor="#16A34A"
-              color="#F0FDF4"
-              text="Create your first menu"
-            />
-          </div>
-        </div>
-      </div>
+      <DashboardHeader
+        title="My Menus"
+        subtitle="Create and manage your meal plans"
+        btnText="Create Menu"
+        btnIcon={EMOJI.memo}
+      />
+      <EmptyDashboard
+        emoji={EMOJI.clipboard}
+        title="No menus yet"
+        subtitle="Start by creating your first menu to organize your meals"
+        btnText="Create your first menu"
+      />
     </div>
   );
 }
