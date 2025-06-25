@@ -50,7 +50,7 @@ export default function Sidebar() {
                 ? "text-[#15803D] bg-[#F0FDF4]"
                 : "text-[#4B5563] hover:text-[#801515] hover:bg-[#FDF0F0]"
             }
-            to={"home"}
+            to={"/"}
           >
             <Emoji name={EMOJI.wavingHand} size="14px" /> Log out
           </NavLink>
