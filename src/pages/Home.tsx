@@ -3,7 +3,7 @@ import Emoji, { EMOJI } from "../components/emoji/Emoji";
 
 export default function Home() {
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex items-center justify-center h-full py-[30px] px-[64px]">
       <div className="flex gap-[50px]">
         <Link to="/about">
           <div className="bg-white rounded-2xl shadow-sm py-[20px] px-[36px] hover:text-[#15803D] hover:bg-[#F0FDF4]">
