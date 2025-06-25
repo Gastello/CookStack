@@ -5,7 +5,7 @@ type EmptyDashboardProps = {
   emoji: (typeof EMOJI)[keyof typeof EMOJI];
   title: string;
   subtitle: string;
-  btnText: string;
+  btnText?: string;
 };
 export default function EmptyDashboard({
   emoji,
@@ -25,14 +25,16 @@ export default function EmptyDashboard({
         <div className="text-center mb-[25px] text-[14px]/[24px] text-[#6B7280]">
           {subtitle}
         </div>
-        <div>
-          <Button
-            icon={EMOJI.dart}
-            textColor="#16A34A"
-            color="#F0FDF4"
-            text={btnText}
-          />
-        </div>
+        {btnText && (
+          <div>
+            <Button
+              icon={EMOJI.dart}
+              textColor="#16A34A"
+              color="#F0FDF4"
+              text={btnText}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
