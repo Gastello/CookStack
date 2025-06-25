@@ -3,9 +3,9 @@ import Sidebar from "../../components/sidebar/Sidebar";
 
 export default function LayoutSidebar() {
   return (
-    <div>
-      <div className="flex">
-        <Sidebar />
+    <div className="flex h-full">
+      <Sidebar />
+      <div className="h-full grow">
         <Outlet />
       </div>
     </div>
