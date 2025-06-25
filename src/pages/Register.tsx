@@ -6,14 +6,14 @@ import Input from "../components/input/Input";
 export default function Register() {
   return (
     <div className="flex items-center justify-center h-full py-[30px] px-[64px]">
-      <div className="max-w-[450px] mx-auto p-[32px] shadow-sm bg-white rounded-2xl">
+      <div className="max-w-[450px] w-full mx-auto p-[32px] shadow-sm bg-white rounded-2xl">
         <div className="mb-[15px] text-center">
           <Emoji name={EMOJI.manCook} size="40px" />
         </div>
         <div className="font-semibold text-[20px]/[32px] text-[#1F2937] mb-[6px] text-center">
           Create an account
         </div>
-        <div className="text-[14px]/[24px] text-[#6B7280] mb-[30px]">
+        <div className="text-[14px]/[24px] text-[#6B7280] text-center mb-[30px]">
           Join CookStack and start organizing your recipes
         </div>
         <form className="mb-[22px]">
