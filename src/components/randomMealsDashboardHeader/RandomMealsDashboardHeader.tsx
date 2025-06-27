@@ -1,5 +1,6 @@
 import Button from "../button/Button";
 import { EMOJI } from "../emoji/Emoji";
+import Input from "../input/Input";
 
 type RandomMealsDashboardHeaderProps = {
   title: string;
@@ -21,13 +22,16 @@ export default function RandomMealsDashboardHeader({
         </div>
         <div className="text-[14px]/[24px] text-[#6B7280]">{subtitle}</div>
       </div>
-      <div>
-        <Button
-          text={btnText}
-          icon={btnIcon}
-          color="#F0FDF4"
-          textColor="#16A34A"
-        />
+      <div className="flex self-baseline gap-[20px]">
+        <Input placeholder="Calories" isBordered={true} placeholderEmoji={EMOJI.fire} placeholderColor="#1F2937" type="number"/>
+        <div>
+          <Button
+            text={btnText}
+            icon={btnIcon}
+            color="#F0FDF4"
+            textColor="#16A34A"
+          />
+        </div>
       </div>
     </div>
   );

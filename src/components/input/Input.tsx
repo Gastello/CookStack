@@ -1,22 +1,37 @@
-import { useId, type HTMLInputTypeAttribute } from "react";
+import { useId, useState, type HTMLInputTypeAttribute } from "react";
+import Emoji, { EMOJI } from "../emoji/Emoji";
 
 type InputProps = {
   label?: string;
   type?: HTMLInputTypeAttribute;
   placeholder?: string;
+  placeholderEmoji?: (typeof EMOJI)[keyof typeof EMOJI];
   isBordered?: boolean;
+  height?: string;
+  width?: string;
+  min?: number;
+  max?: number;
+  placeholderColor?: string;
 };
 
 export default function Input({
   label,
   type = "text",
   placeholder = "",
+  placeholderEmoji,
   isBordered = true,
+  height = "48px",
+  width,
+  min,
+  max,
+  placeholderColor = "#CCCCCC",
 }: InputProps) {
   const id = useId();
+  const [value, setValue] = useState("");
+
   const inputStyle =
-    "px-[16px] py-[12px] bg-white rounded-2xl w-full placeholder:text-[16px]/[24px] placeholder:text-[#CCCCCC]";
-    
+    "box-border h-[48px] px-[16px] py-[12px] rounded-2xl w-full text-[16px]/[24px] z-10 relative bg-transparent";
+
   return (
     <div>
       {label && (
@@ -27,14 +42,36 @@ export default function Input({
           {label}
         </label>
       )}
-      <input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        className={
-          isBordered ? `border border-[#E5E7EB] ${inputStyle}` : inputStyle
-        }
-      />
+      <div className="relative">
+        <input
+          style={{
+            height: height,
+            width: width,
+          }}
+          id={id}
+          type={type}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className={
+            isBordered ? `${inputStyle} border border-[#E5E7EB]` : inputStyle
+          }
+          min={min}
+          max={max}
+        />
+        {value === "" && (
+          <div
+            style={{ color: placeholderColor }}
+            className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[16px]/[24px] z-0 bg-transparent"
+          >
+            {placeholderEmoji && (
+              <span className="mr-[10px]">
+                <Emoji name={placeholderEmoji} size="16px" />
+              </span>
+            )}
+            {placeholder}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
