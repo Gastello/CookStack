@@ -2,15 +2,13 @@ import { useState } from "react";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 
 type DropdownProps = {
+    placeholder: string;
   items: string[];
   multiple?: boolean;
   width?: string;
 };
 
-export default function Dropdown({ items, width = "230px" }: DropdownProps) {
-  const dropdownStyle =
-    "rounded-2xl bg-white text-[14px]/[24px] text-[#1F2937] cursor-pointer border border-[#E5E7EB] overflow-hidden select-none";
-
+export default function Dropdown({ items, placeholder, width = "230px" }: DropdownProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState(
     Object.fromEntries(items.map((x) => [x, false]))
@@ -18,10 +16,14 @@ export default function Dropdown({ items, width = "230px" }: DropdownProps) {
   console.log(items.map((x) => [x, false]));
   console.log(selectedItems);
   return (
-    <div className={dropdownStyle}>
+    <div
+      className={`text-[14px]/[24px] text-[#1F2937] cursor-pointer select-none relative`}
+    >
       <div
         style={{ width: width }}
-        className="h-[48px] px-[16px] py-[12px]"
+        className={`h-[48px] px-[16px] py-[12px] bg-white border border-[#E5E7EB] ${
+          isOpen ? "rounded-t-2xl border-b-0" : "rounded-2xl"
+        }`}
         onClick={() => {
           setIsOpen((prev) => !prev);
         }}
@@ -29,10 +31,13 @@ export default function Dropdown({ items, width = "230px" }: DropdownProps) {
         <span className="mr-[10px]">
           <Emoji name={EMOJI.memo} size="14px" />
         </span>
-        Choose groups
+        {placeholder}
       </div>
       {isOpen && (
-        <div>
+        <div
+          style={{ width: width }}
+          className="border border-t-0 border-[#E5E7EB] absolute bottom-0 left-0 translate-y-full rounded-b-2xl bg-white  overflow-hidden"
+        >
           {Object.entries(selectedItems).map(([item, isSelected]) => (
             <div
               className="py-[4px] px-[16px] border-t border-[#E5E7EB] cursor-pointer hover:bg-[#E5E7EB]"
