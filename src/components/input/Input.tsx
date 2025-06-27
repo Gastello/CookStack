@@ -30,7 +30,7 @@ export default function Input({
   const [value, setValue] = useState("");
 
   const inputStyle =
-    "box-border h-[48px] px-[16px] py-[12px] rounded-2xl w-full text-[16px]/[24px] z-10 relative bg-transparent";
+    "box-border h-[48px] px-[16px] py-[12px] rounded-2xl w-full text-[14px]/[24px] z-10 relative bg-transparent";
 
   return (
     <div>
@@ -47,6 +47,7 @@ export default function Input({
           style={{
             height: height,
             width: width,
+            paddingLeft: placeholderEmoji ? "42px" : "16px",
           }}
           id={id}
           type={type}
@@ -58,19 +59,18 @@ export default function Input({
           min={min}
           max={max}
         />
-        {value === "" && (
-          <div
-            style={{ color: placeholderColor }}
-            className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[16px]/[24px] z-0 bg-transparent"
-          >
-            {placeholderEmoji && (
-              <span className="mr-[10px]">
-                <Emoji name={placeholderEmoji} size="16px" />
-              </span>
-            )}
-            {placeholder}
-          </div>
-        )}
+
+        <div
+          style={{ color: placeholderColor }}
+          className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-transparent"
+        >
+          {placeholderEmoji && (
+            <span className="mr-[10px]">
+              <Emoji name={placeholderEmoji} size="14px" />
+            </span>
+          )}
+          {value === "" && placeholder}
+        </div>
       </div>
     </div>
   );

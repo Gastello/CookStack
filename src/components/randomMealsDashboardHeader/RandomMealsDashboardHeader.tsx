@@ -23,7 +23,8 @@ export default function RandomMealsDashboardHeader({
         <div className="text-[14px]/[24px] text-[#6B7280]">{subtitle}</div>
       </div>
       <div className="flex self-baseline gap-[20px]">
-        <Input placeholder="Calories" isBordered={true} placeholderEmoji={EMOJI.fire} placeholderColor="#1F2937" type="number"/>
+        <Input placeholder="Cooking time" isBordered={true} placeholderEmoji={EMOJI.clock} placeholderColor="#1F2937" type="number" width="230px"/>
+        <Input placeholder="Calories" isBordered={true} placeholderEmoji={EMOJI.fire} placeholderColor="#1F2937" type="number" width="230px"/>
         <div>
           <Button
             text={btnText}
