@@ -47,7 +47,7 @@ export default function Input({
           style={{
             height: height,
             width: width,
-            paddingLeft: placeholderEmoji ? "42px" : "16px",
+            paddingLeft: placeholderEmoji ? "40px" : "16px",
           }}
           id={id}
           type={type}
@@ -62,7 +62,7 @@ export default function Input({
 
         <div
           style={{ color: placeholderColor }}
-          className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-transparent"
+          className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-white"
         >
           {placeholderEmoji && (
             <span className="mr-[10px]">

@@ -1,4 +1,5 @@
 import Button from "../button/Button";
+import Dropdown from "../dropdown/DropDown";
 import { EMOJI } from "../emoji/Emoji";
 import Input from "../input/Input";
 
@@ -24,7 +25,10 @@ export default function RandomMealsDashboardHeader({
       </div>
       <div className="flex self-baseline gap-[20px]">
         <Input placeholder="Cooking time" isBordered={true} placeholderEmoji={EMOJI.clock} placeholderColor="#1F2937" type="number" width="230px"/>
-        <Input placeholder="Calories" isBordered={true} placeholderEmoji={EMOJI.fire} placeholderColor="#1F2937" type="number" width="230px"/>
+        <Input placeholder="Calories" isBordered={true} placeholderEmoji={EMOJI.fire} placeholderColor="#1F2937" type="text" width="230px"/>
+        <div>
+          <Dropdown items={["Breakfast","Lunch", "Dinner"]}/>
+        </div>
         <div>
           <Button
             text={btnText}
