@@ -1,9 +1,36 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/button/Button";
 import Emoji, { EMOJI } from "../components/emoji/Emoji";
 import Input from "../components/input/Input";
+import { useUserStore } from "../App";
+import { useState } from "react";
 
 export default function Login() {
+  const [userPassword, setUserPassword] = useState("");
+  const [userMail, setUserMail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { signInUser } = useUserStore();
+
+  const signIn = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await signInUser({
+        email: userMail,
+        password: userPassword,
+      });
+
+      if (error) {
+        console.error("Login error:", error);
+      } else if (data?.user) {
+        navigate("/menus");
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="flex items-center justify-center h-full py-[30px] px-[64px]">
       <div className="max-w-[450px] w-full mx-auto p-[32px] shadow-sm bg-white rounded-2xl">
@@ -23,16 +50,18 @@ export default function Login() {
               placeholder="Enter your email"
               type="email"
               isBordered={false}
+              onChange={(e) => setUserMail(e.target.value)}
             />
             <Input
               label="Password"
               placeholder="Create a password"
               type="password"
               isBordered={false}
+              onChange={(e) => setUserPassword(e.target.value)}
             />
           </div>
           <div>
-            <Button text="Sign In" />
+            <Button onClick={signIn} isDisabled={isLoading} text="Sign In" />
           </div>
         </form>
         <div className="text-[14px]/[24px] flex gap-[15px] justify-center">

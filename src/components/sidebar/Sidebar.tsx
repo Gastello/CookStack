@@ -1,8 +1,30 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import Logo from "../logo/Logo";
+import { useUserStore } from "../../App";
+import { useState } from "react";
 
 export default function Sidebar() {
+  const {signOutUser} = useUserStore();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const signOut = async () => {
+    setIsLoading(true);
+    try {
+      const {success, error} = await signOutUser();
+
+      if (error) {
+        console.error("Logout error:", error);
+      } else if (success) {
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   return (
     <div className="max-w-[256px] w-full bg-white h-screen py-[30px] px-[24px]">
       <div>
@@ -44,16 +66,12 @@ export default function Sidebar() {
           >
             <Emoji name={EMOJI.dice} size="14px" /> Random Meals
           </NavLink>
-          <NavLink
-            className={({ isActive }) =>
-              isActive
-                ? "text-[#15803D] bg-[#F0FDF4]"
-                : "text-[#4B5563] hover:text-[#801515] hover:bg-[#FDF0F0]"
-            }
-            to={"/"}
+          <div
+            className={"text-[#4B5563] hover:text-[#801515] hover:bg-[#FDF0F0] cursor-pointer"}
+            onClick={signOut}
           >
             <Emoji name={EMOJI.wavingHand} size="14px" /> Log out
-          </NavLink>
+          </div>
         </nav>
       </div>
     </div>

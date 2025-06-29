@@ -2,6 +2,7 @@ import { useId, useState, type HTMLInputTypeAttribute } from "react";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 
 type InputProps = {
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   label?: string;
   type?: HTMLInputTypeAttribute;
   placeholder?: string;
@@ -15,6 +16,7 @@ type InputProps = {
 };
 
 export default function Input({
+  onChange = () => {},
   label,
   type = "text",
   placeholder = "",
@@ -44,6 +46,10 @@ export default function Input({
       )}
       <div className="relative">
         <input
+          onChange={(e) => {
+            onChange(e);
+            setValue(e.target.value);
+          }}
           style={{
             height: height,
             width: width,
@@ -52,7 +58,6 @@ export default function Input({
           id={id}
           type={type}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
           className={
             isBordered ? `${inputStyle} border border-[#E5E7EB]` : inputStyle
           }
