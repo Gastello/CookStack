@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "../../components/sidebar/Sidebar";
-import { useUserStore } from "../../App";
+import { useUserStore } from "../../store/userStore";
 
 export default function LayoutSidebar() {
   const { user } = useUserStore();

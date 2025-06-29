@@ -2,8 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/button/Button";
 import Emoji, { EMOJI } from "../components/emoji/Emoji";
 import Input from "../components/input/Input";
-import { useUserStore } from "../App";
 import { useState } from "react";
+import Toast from "../components/toast/Toast";
+import { useUserStore } from "../store/userStore";
 
 export default function Login() {
   const [userPassword, setUserPassword] = useState("");
@@ -71,6 +72,7 @@ export default function Login() {
           </div>
         </div>
       </div>
+      <Toast message="Test!" success={true} />
     </div>
   );
 }

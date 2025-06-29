@@ -1,8 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import Logo from "../logo/Logo";
-import { useUserStore } from "../../App";
 import { useState } from "react";
+import { useUserStore } from "../../store/userStore";
 
 export default function Sidebar() {
   const { user } = useUserStore();

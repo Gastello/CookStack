@@ -3,7 +3,7 @@ import Button from "../components/button/Button";
 import Emoji, { EMOJI } from "../components/emoji/Emoji";
 import Input from "../components/input/Input";
 import { useState } from "react";
-import { useUserStore } from "../App";
+import { useUserStore } from "../store/userStore";
 
 export default function Register() {
   const [userName, setUserName] = useState("");
