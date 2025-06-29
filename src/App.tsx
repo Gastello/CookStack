@@ -1,27 +1,27 @@
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/router";
-import { createClient } from "@supabase/supabase-js";
-import { useState, useEffect } from "react";
+import { createClient, type Session, type User } from "@supabase/supabase-js";
+import { useEffect } from "react";
 import { create } from "zustand";
 
-type User = {
-  name: string;
-  mail: string;
-};
-
 type UserState = {
-  user: User;
-  setUserData: (userData: User) => void;
+  user: Session | null;
+  setUserData: (userData: Session | null) => void;
   signUpNewUser: (args: {
     email: string;
     password: string;
     username: string;
-  }) => Promise<{ success: boolean; data?: any; error?: any }>;
-  signInUser: (args: {
-    email: string;
-    password: string;
-  }) => Promise<{ success: boolean; data?: any; error?: any }>;
-  signOutUser: () => Promise<{ success: boolean; error?: any }>;
+  }) => Promise<{
+    success: boolean;
+    data?: { user: User | null; session: Session | null };
+    error?: string;
+  }>;
+  signInUser: (args: { email: string; password: string }) => Promise<{
+    success: boolean;
+    data?: { user: User | null; session: Session | null };
+    error?: string;
+  }>;
+  signOutUser: () => Promise<{ success: boolean; error?: string }>;
 };
 
 const supabase = createClient(
@@ -56,13 +56,6 @@ const signUpNewUser = async ({
   return { success: true, data };
 };
 
-// SIGN OUT
-const signOutUser = async () => {
-  const { error } = await supabase.auth.signOut();
-  if (error) return { success: false, error: error.message };
-  return { success: true };
-};
-
 // SIGN IN
 const signInUser = async ({
   email,
@@ -70,7 +63,7 @@ const signInUser = async ({
 }: {
   email: string;
   password: string;
-}): Promise<{ success: boolean; data?: any; error?: any }> => {
+}) => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
@@ -81,14 +74,24 @@ const signInUser = async ({
       return { success: false, error: error.message };
     }
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("User SignIn Error!", error);
-    return { success: false, error: error?.message || "Unknown error" };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 };
 
+// SIGN OUT
+const signOutUser = async () => {
+  const { error } = await supabase.auth.signOut();
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+};
+
 export const useUserStore = create<UserState>((set) => ({
-  user: { name: "", mail: "" },
+  user: null,
   setUserData: (userData) => set(() => ({ user: userData })),
   signInUser: signInUser,
   signOutUser: signOutUser,
@@ -96,16 +99,14 @@ export const useUserStore = create<UserState>((set) => ({
 }));
 
 function App() {
-  const [session, setSession] = useState(undefined);
-  
+  const { setUserData } = useUserStore();
   useEffect(() => {
-    console.log("session", session);
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+      setUserData(session ?? null);
     });
 
     supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+      setUserData(session ?? null);
     });
   }, []);
 

@@ -13,8 +13,6 @@ export default function Dropdown({ items, placeholder, width = "230px" }: Dropdo
   const [selectedItems, setSelectedItems] = useState(
     Object.fromEntries(items.map((x) => [x, false]))
   );
-  console.log(items.map((x) => [x, false]));
-  console.log(selectedItems);
   return (
     <div
       className={`text-[14px]/[24px] text-[#1F2937] cursor-pointer select-none relative`}
