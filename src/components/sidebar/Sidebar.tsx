@@ -5,14 +5,15 @@ import { useUserStore } from "../../App";
 import { useState } from "react";
 
 export default function Sidebar() {
-  const {signOutUser} = useUserStore();
+  const { user } = useUserStore();
+  const { signOutUser } = useUserStore();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const signOut = async () => {
     setIsLoading(true);
     try {
-      const {success, error} = await signOutUser();
+      const { success, error } = await signOutUser();
 
       if (error) {
         console.error("Logout error:", error);
@@ -24,7 +25,7 @@ export default function Sidebar() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
   return (
     <div className="max-w-[256px] w-full bg-white h-screen py-[30px] px-[24px]">
       <div>
@@ -32,7 +33,7 @@ export default function Sidebar() {
           <Logo />
         </div>
         <div className="text-center text-[14px]/[24px] mb-[30px]">
-          <span>Hello, Gastello!</span>{" "}
+          <span>Hello, {user?.user_metadata.display_name}!</span>
           <Emoji size="14px" name={EMOJI.wavingHand} />
         </div>
         <nav className="*:block *:text-[14px]/[24px] *:px-[16px] *:py-[12px] *:rounded-xl *:mb-[8px]">
@@ -67,7 +68,11 @@ export default function Sidebar() {
             <Emoji name={EMOJI.dice} size="14px" /> Random Meals
           </NavLink>
           <div
-            className={"text-[#4B5563] hover:text-[#801515] hover:bg-[#FDF0F0] cursor-pointer"}
+            className={`${
+              isLoading
+                ? "text-[#801515] bg-[#FDF0F0]"
+                : "text-[#4B5563] hover:text-[#801515] hover:bg-[#FDF0F0] cursor-pointer"
+            }`}
             onClick={signOut}
           >
             <Emoji name={EMOJI.wavingHand} size="14px" /> Log out

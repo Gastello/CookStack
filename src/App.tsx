@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { create } from "zustand";
 
 type UserState = {
-  user: Session | null;
+  user: User | null;
   setUserData: (userData: Session | null) => void;
   signUpNewUser: (args: {
     email: string;
@@ -92,7 +92,7 @@ const signOutUser = async () => {
 
 export const useUserStore = create<UserState>((set) => ({
   user: null,
-  setUserData: (userData) => set(() => ({ user: userData })),
+  setUserData: (userData) => set(() => ({ user: userData?.user })),
   signInUser: signInUser,
   signOutUser: signOutUser,
   signUpNewUser: signUpNewUser,
