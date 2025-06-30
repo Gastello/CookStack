@@ -1,4 +1,4 @@
-import type { DishType } from "../../pages/Dishes";
+import type { DishType } from "../../store/dishedStore";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import Tag from "../tag/Tag";
 
@@ -33,7 +33,17 @@ export default function DishesDashboard({ dishes }: DishesDashboardProps) {
                 </div>
               </div>
               <div>
-                <div className="w-16 h-16 rounded-lg bg-[#d9d9d9]"></div>
+                <div
+                  style={{
+                    backgroundImage: dish?.img
+                      ? `url(${dish?.img})`
+                      : `url(/assets/emoji/pan.png)`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                  className="w-16 h-16 rounded-lg"
+                ></div>
               </div>
             </div>
             <div className="flex justify-between items-end">
