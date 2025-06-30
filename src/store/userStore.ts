@@ -1,6 +1,7 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { create } from "zustand";
 import { signInUser, signOutUser, signUpNewUser } from "../auth/auth";
+import { persist } from "zustand/middleware";
 
 type UserState = {
   user: User | null;
@@ -22,10 +23,17 @@ type UserState = {
   signOutUser: () => Promise<{ success: boolean; error?: string }>;
 };
 
-export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  setUserData: (userData) => set(() => ({ user: userData?.user })),
-  signInUser: signInUser,
-  signOutUser: signOutUser,
-  signUpNewUser: signUpNewUser,
-}));
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      user: null,
+      setUserData: (userData) => set(() => ({ user: userData?.user })),
+      signUpNewUser,
+      signInUser,
+      signOutUser,
+    }),
+    {
+      name: "user-storage", // ключ у localStorage
+    }
+  )
+);

@@ -6,7 +6,11 @@ import DishesDashboard from "../components/dishesDashboard/DishesDashboard";
 import { useDishesStore } from "../store/dishedStore";
 
 export default function Dishes() {
-  const { dishes, fetchDishes, loading, error, addDish } = useDishesStore();
+  const { dishes } = useDishesStore();
+  const { fetchDishes } = useDishesStore();
+  const { loading } = useDishesStore();
+  const { error } = useDishesStore();
+  const { addDish } = useDishesStore();
 
   useEffect(() => {
     fetchDishes();

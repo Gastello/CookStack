@@ -25,8 +25,8 @@ export default function Register() {
       });
 
       if (error) {
-        console.error("Registration error:", error);
         addToast(false, error);
+        console.error("Registration error:", error);
       } else if (data?.user) {
         addToast(true, "You’ve successfully registered!");
         navigate("/login");

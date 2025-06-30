@@ -67,13 +67,25 @@ export const signOutUser = async () => {
 
 export function useUserAuth() {
   const { setUserData } = useUserStore();
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUserData(session ?? null);
-    });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setUserData(session ?? null);
-    });
+  useEffect(() => {
+    // Ініціалізація сесії
+    const init = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) console.error("getSession error:", error.message);
+      setUserData(data?.session ?? null);
+    };
+    init();
+
+    // Підписка на зміни сесії
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUserData(session ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe(); // очищення
+    };
   }, []);
 }
