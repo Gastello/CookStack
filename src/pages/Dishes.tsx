@@ -4,23 +4,20 @@ import { EMOJI } from "../components/emoji/Emoji";
 import EmptyDashboard from "../components/emptyDashboard/EmptyDashboard";
 import DishesDashboard from "../components/dishesDashboard/DishesDashboard";
 import { useDishesStore } from "../store/dishedStore";
+import Loader, { LOADER_GIFS } from "../components/loader/Loader";
 
 export default function Dishes() {
   const { dishes } = useDishesStore();
   const { fetchDishes } = useDishesStore();
   const { loading } = useDishesStore();
-  const { error } = useDishesStore();
   const { addDish } = useDishesStore();
 
   useEffect(() => {
     fetchDishes();
   }, [fetchDishes]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-
   return (
-    <div className="flex flex-col h-full p-[30px]">
+    <div className="ralative flex flex-col h-full p-[30px]">
       <DashboardHeader
         title="My Dishes"
         subtitle="Browse and manage your dish collection"
@@ -28,7 +25,13 @@ export default function Dishes() {
         btnIcon={EMOJI.forkAndKnife}
         btnEvent={addDish}
       />
-      {dishes && dishes.length != 0 ? (
+      {loading ? (
+        <Loader
+          loading={loading}
+          size="256px"
+          name={LOADER_GIFS.forkAndKnife}
+        />
+      ) : dishes && dishes.length != 0 ? (
         <DishesDashboard />
       ) : (
         <EmptyDashboard

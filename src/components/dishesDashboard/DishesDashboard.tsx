@@ -5,8 +5,8 @@ import Tag from "../tag/Tag";
 export default function DishesDashboard() {
   const { dishes } = useDishesStore();
   const { makeFav } = useDishesStore();
-//   const { removeDish } = useDishesStore();
-//   const { updateDish } = useDishesStore();
+  //   const { removeDish } = useDishesStore();
+  //   const { updateDish } = useDishesStore();
 
   return (
     <div className="mt-[20px] grid grid-cols-4 gap-[20px]">
