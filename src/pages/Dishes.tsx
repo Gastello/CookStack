@@ -108,7 +108,7 @@ export default function Dishes() {
         return Number(b.isFav) - Number(a.isFav);
       }),
     ]);
-  }, [dishes]);
+  }, []);
 
   return (
     <div className="flex flex-col h-full p-[30px]">
@@ -118,7 +118,7 @@ export default function Dishes() {
         btnText="Add Dish"
         btnIcon={EMOJI.forkAndKnife}
       />
-      {dishes ? (
+      {dishes && dishes.length != 0 ? (
         <DishesDashboard dishes={dishes} />
       ) : (
         <EmptyDashboard
