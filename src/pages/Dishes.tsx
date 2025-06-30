@@ -24,7 +24,7 @@ export default function Dishes() {
         btnIcon={EMOJI.forkAndKnife}
       />
       {dishes && dishes.length != 0 ? (
-        <DishesDashboard dishes={dishes} />
+        <DishesDashboard />
       ) : (
         <EmptyDashboard
           emoji={EMOJI.forkAndKnife}

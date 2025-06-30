@@ -13,7 +13,7 @@ export type DishType = {
   time: number;
   calories: number;
   isFav: boolean;
-  tags: TagType[];
+  tags?: TagType[];
   img?: string;
 };
 
@@ -65,7 +65,12 @@ export const useDishesStore = create<DishesState>((set, get) => ({
 
       if (error) throw error;
 
-      const mapped = mapSupabaseDataToDishType(data ?? []);
+      const mapped = mapSupabaseDataToDishType(data ?? []).sort((a, b) => {
+        if (!a && !b) return 0;
+        if (!a) return 1;
+        if (!b) return -1;
+        return Number(b.isFav) - Number(a.isFav);
+      });
       set({ dishes: mapped, loading: false });
     } catch (error: unknown) {
       const errorMessage =
@@ -74,7 +79,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
     }
   },
 
-  addDish: async (dish) => {
+  addDish: async () => {
     set({ loading: true, error: null });
     try {
       const {
@@ -87,30 +92,17 @@ export const useDishesStore = create<DishesState>((set, get) => ({
         .from("dishes")
         .insert({
           user_id: user.id,
-          name: dish.name,
-          time: dish.time,
-          calories: dish.calories,
-          is_fav: dish.isFav,
-          img_url: dish.img,
+          name: "New dish",
+          time: 0,
+          calories: 0,
+          is_fav: false,
         })
         .select()
         .single();
 
       if (insertError) throw insertError;
 
-      // 2. Вставка тегів у dish_tags
-      if (dish.tags.length > 0) {
-        const dishTagsRows = dish.tags.map((tag) => ({
-          dish_id: newDishData.id,
-          tag_id: tag.tag_id,
-        }));
-        const { error: tagInsertError } = await supabase
-          .from("dish_tags")
-          .insert(dishTagsRows);
-        if (tagInsertError) throw tagInsertError;
-      }
-
-      // 3. Оновити локальний стан - додати нову страву з тегами
+      // 2. Оновити локальний стан - додати нову страву
       const newDish: DishType = {
         id: newDishData.id,
         name: newDishData.name,
@@ -118,7 +110,6 @@ export const useDishesStore = create<DishesState>((set, get) => ({
         calories: newDishData.calories,
         isFav: newDishData.is_fav,
         img: newDishData.img_url ?? undefined,
-        tags: dish.tags,
       };
 
       set((state) => ({ dishes: [...state.dishes, newDish], loading: false }));
@@ -181,7 +172,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       if (deleteTagsError) throw deleteTagsError;
 
       // Додаємо нові зв’язки
-      if (dish.tags.length > 0) {
+      if (dish.tags && dish.tags.length > 0) {
         const dishTagsRows = dish.tags.map((tag) => ({
           dish_id: dish.id,
           tag_id: tag.tag_id,
@@ -227,12 +218,14 @@ export const useDishesStore = create<DishesState>((set, get) => ({
 
       if (error) throw error;
 
-      set((state) => ({
-        dishes: state.dishes.map((d) =>
-          d.id === id ? { ...d, isFav: newFav } : d
-        ),
+      const updatedDishes = get()
+        .dishes.map((d) => (d.id === id ? { ...d, isFav: newFav } : d))
+        .sort((a, b) => Number(b.isFav) - Number(a.isFav));
+
+      set({
+        dishes: updatedDishes,
         loading: false,
-      }));
+      });
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

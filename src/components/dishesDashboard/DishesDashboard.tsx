@@ -1,11 +1,10 @@
-import type { DishType } from "../../store/dishedStore";
+import { useDishesStore } from "../../store/dishedStore";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import Tag from "../tag/Tag";
 
-type DishesDashboardProps = {
-  dishes: DishType[];
-};
-export default function DishesDashboard({ dishes }: DishesDashboardProps) {
+export default function DishesDashboard() {
+  const { dishes, makeFav } = useDishesStore();
+
   return (
     <div className="mt-[20px] grid grid-cols-4 gap-[20px]">
       {dishes.map((dish) => {
@@ -47,18 +46,20 @@ export default function DishesDashboard({ dishes }: DishesDashboardProps) {
               </div>
             </div>
             <div className="flex justify-between items-end">
-              <div className="flex gap-[5px] flex-wrap">
-                {dish?.tags.map((tag) => {
-                  return (
-                    <Tag
-                      key={`${tag.text}_${tag.color}`}
-                      color={tag.color}
-                      text={tag.text}
-                    />
-                  );
-                })}
-              </div>
-              <div>
+              {dish?.tags && (
+                <div className="flex gap-[5px] flex-wrap">
+                  {dish?.tags.map((tag) => {
+                    return (
+                      <Tag
+                        key={`${tag.text}_${tag.color}`}
+                        color={tag.color}
+                        text={tag.text}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+              <div className="cursor-pointer" onClick={() => makeFav(dish.id)}>
                 {dish?.isFav ? (
                   <Emoji name={EMOJI.heartRed} size="22px" />
                 ) : (
