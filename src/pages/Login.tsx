@@ -4,6 +4,7 @@ import Emoji, { EMOJI } from "../components/emoji/Emoji";
 import Input from "../components/input/Input";
 import { useState } from "react";
 import { useUserStore } from "../store/userStore";
+import { useToastStore } from "../store/toastStore";
 
 export default function Login() {
   const [userPassword, setUserPassword] = useState("");
@@ -11,7 +12,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { signInUser } = useUserStore();
-
+  const { addToast } = useToastStore();
   const signIn = async () => {
     setIsLoading(true);
     try {
@@ -22,11 +23,18 @@ export default function Login() {
 
       if (error) {
         console.error("Login error:", error);
+        if (error == "missing email or phone") {
+          addToast(false, "Missing email");
+        } else {
+          addToast(false, error);
+        }
       } else if (data?.user) {
+        addToast(true, "Welcome back!");
         navigate("/menus");
       }
     } catch (err) {
       console.error("Unexpected error:", err);
+      addToast(false, "Unexpected error!");
     } finally {
       setIsLoading(false);
     }

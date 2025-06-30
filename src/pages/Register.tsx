@@ -4,6 +4,7 @@ import Emoji, { EMOJI } from "../components/emoji/Emoji";
 import Input from "../components/input/Input";
 import { useState } from "react";
 import { useUserStore } from "../store/userStore";
+import { useToastStore } from "../store/toastStore";
 
 export default function Register() {
   const [userName, setUserName] = useState("");
@@ -12,7 +13,7 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { signUpNewUser } = useUserStore();
-
+  const { addToast } = useToastStore();
   const createAccount = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -25,11 +26,14 @@ export default function Register() {
 
       if (error) {
         console.error("Registration error:", error);
+        addToast(false, error);
       } else if (data?.user) {
+        addToast(true, "You’ve successfully registered!");
         navigate("/login");
       }
     } catch (err) {
       console.error("Unexpected error:", err);
+      addToast(false, "Unexpected error!");
     } finally {
       setIsLoading(false);
     }

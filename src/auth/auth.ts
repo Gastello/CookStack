@@ -28,7 +28,6 @@ export const signUpNewUser = async ({
   });
 
   if (error) {
-    console.error("User SignUp Error!", error);
     return { success: false, error: error.message };
   }
   return { success: true, data };
@@ -48,12 +47,10 @@ export const signInUser = async ({
       password: password,
     });
     if (error) {
-      console.error("User SignIn Error!", error);
       return { success: false, error: error.message };
     }
     return { success: true, data };
   } catch (error: unknown) {
-    console.error("User SignIn Error!", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",

@@ -3,12 +3,14 @@ import Emoji, { EMOJI } from "../emoji/Emoji";
 import Logo from "../logo/Logo";
 import { useState } from "react";
 import { useUserStore } from "../../store/userStore";
+import { useToastStore } from "../../store/toastStore";
 
 export default function Sidebar() {
   const { user } = useUserStore();
   const { signOutUser } = useUserStore();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const { addToast } = useToastStore();
 
   const signOut = async () => {
     setIsLoading(true);
@@ -17,11 +19,14 @@ export default function Sidebar() {
 
       if (error) {
         console.error("Logout error:", error);
+        addToast(false, error);
       } else if (success) {
+        addToast(true, "See you next time!");
         navigate("/login");
       }
     } catch (err) {
       console.error("Unexpected error:", err);
+      addToast(false, "Unexpected error!");
     } finally {
       setIsLoading(false);
     }
