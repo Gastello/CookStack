@@ -46,9 +46,9 @@ export default function DishesDashboard() {
               </div>
             </div>
             <div className="flex justify-between items-end">
-              {dish?.tags && (
-                <div className="flex gap-[5px] flex-wrap">
-                  {dish?.tags.map((tag) => {
+              <div className="flex gap-[5px] flex-wrap">
+                {dish?.tags &&
+                  dish?.tags.map((tag) => {
                     return (
                       <Tag
                         key={`${tag.text}_${tag.color}`}
@@ -57,8 +57,8 @@ export default function DishesDashboard() {
                       />
                     );
                   })}
-                </div>
-              )}
+              </div>
+
               <div className="cursor-pointer" onClick={() => makeFav(dish.id)}>
                 {dish?.isFav ? (
                   <Emoji name={EMOJI.heartRed} size="22px" />

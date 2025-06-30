@@ -6,7 +6,7 @@ import DishesDashboard from "../components/dishesDashboard/DishesDashboard";
 import { useDishesStore } from "../store/dishedStore";
 
 export default function Dishes() {
-  const { dishes, fetchDishes, loading, error } = useDishesStore();
+  const { dishes, fetchDishes, loading, error, addDish } = useDishesStore();
 
   useEffect(() => {
     fetchDishes();
@@ -22,6 +22,7 @@ export default function Dishes() {
         subtitle="Browse and manage your dish collection"
         btnText="Add Dish"
         btnIcon={EMOJI.forkAndKnife}
+        btnEvent={addDish}
       />
       {dishes && dishes.length != 0 ? (
         <DishesDashboard />

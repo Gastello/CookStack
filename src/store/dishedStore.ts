@@ -22,7 +22,7 @@ type DishesState = {
   loading: boolean;
   error: string | null;
   fetchDishes: () => Promise<void>;
-  addDish: (dish: Omit<DishType, "id">) => Promise<void>;
+  addDish: () => Promise<void>;
   removeDish: (id: string) => Promise<void>;
   updateDish: (dish: DishType) => Promise<void>;
   makeFav: (id: string) => Promise<void>;

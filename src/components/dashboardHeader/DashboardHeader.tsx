@@ -6,12 +6,14 @@ type DashboardHeaderProps = {
   subtitle: string;
   btnText: string;
   btnIcon: (typeof EMOJI)[keyof typeof EMOJI];
+  btnEvent?: () => void;
 };
 export default function DashboardHeader({
   title,
   subtitle,
   btnText,
   btnIcon,
+  btnEvent,
 }: DashboardHeaderProps) {
   return (
     <div className="flex justify-between">
@@ -23,6 +25,7 @@ export default function DashboardHeader({
       </div>
       <div>
         <Button
+          onClick={btnEvent}
           text={btnText}
           icon={btnIcon}
           color="#F0FDF4"

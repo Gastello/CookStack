@@ -6,16 +6,18 @@ export default function Toaster() {
   const { deleteToast } = useToastStore();
 
   return (
-    <div className="absolute right-[30px] top-[30px] w-[250px] h-full overflow-hidden z-100">
-      {toastList.map((toast: ToastType) => {
-        return (
-          <Toast
-            key={toast.id}
-            toast={toast}
-            deleteToast={() => deleteToast(toast.id)}
-          />
-        );
-      })}
-    </div>
+    deleteToast.length > 1 && (
+      <div className="absolute right-[30px] top-[30px] w-[250px] max-h-11/12 overflow-hidden z-100">
+        {toastList.map((toast: ToastType) => {
+          return (
+            <Toast
+              key={toast.id}
+              toast={toast}
+              deleteToast={() => deleteToast(toast.id)}
+            />
+          );
+        })}
+      </div>
+    )
   );
 }
