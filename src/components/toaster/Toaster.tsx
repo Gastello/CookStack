@@ -1,36 +1,21 @@
-import { useToastStore } from "../../store/toastStore";
-import Emoji, { EMOJI } from "../emoji/Emoji";
+import { useToastStore, type ToastType } from "../../store/toastStore";
+import Toast from "./Toast";
 
 export default function Toaster() {
   const { toastList } = useToastStore();
-  const { addToast } = useToastStore();
   const { deleteToast } = useToastStore();
+
   return (
-    <div className="absolute right-[30px] top-[30px] w-[250px] z-100">
-      {toastList.map((toast) => {
+    <div className="absolute right-[30px] top-[30px] w-[250px] h-full overflow-hidden z-100">
+      {toastList.map((toast: ToastType) => {
         return (
-          <div
+          <Toast
             key={toast.id}
-            className="p-[10px] bg-[#FFFFFF] shadow-sm rounded-[10px] mb-2.5 cursor-pointer"
-            onClick={() => deleteToast(toast.id)}
-          >
-            <Emoji
-              size="16px"
-              name={toast.success ? EMOJI.checkmarkTrue : EMOJI.checkmarkFalse}
-            />
-            <span className="ml-2.5 font-semibold text-[12px]/[16px] text-[#1F2937]">
-              {toast.message}
-            </span>
-          </div>
+            toast={toast}
+            deleteToast={() => deleteToast(toast.id)}
+          />
         );
       })}
-
-      <button
-        className="p-2 bg-amber-300"
-        onClick={() => addToast(true, "test")}
-      >
-        ADD TOAST
-      </button>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { useUserStore } from "../../store/userStore";
+import Toaster from "../../components/toaster/Toaster";
 
 export default function LayoutSidebar() {
   const { user } = useUserStore();
@@ -13,6 +14,7 @@ export default function LayoutSidebar() {
       <div className="h-full grow">
         <Outlet />
       </div>
+      <Toaster />
     </div>
   );
 }

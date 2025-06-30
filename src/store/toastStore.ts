@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type ToastType = {
+export type ToastType = {
   id: string;
   success: boolean;
   message: string;
