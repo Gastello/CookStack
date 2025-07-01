@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const LOADER_GIFS = {
   pan: "Cooking",
@@ -14,35 +14,51 @@ export const LOADER_GIFS = {
 };
 type LoaderProps = {
   name?: (typeof LOADER_GIFS)[keyof typeof LOADER_GIFS];
-  size?: string;
+  size?: number;
   duration?: number;
   loading?: boolean;
 };
 export default function Loader({
-  size = "128px",
+  size = 128,
   name = LOADER_GIFS.pan,
   loading,
-  duration = 1518,
+  duration,
 }: LoaderProps) {
   const [playing, setPlaying] = useState(true);
+
+  // Сценарій 1: якщо loading є, вимикаємо анімацію коли loading стає false
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setPlaying(false);
-    }, duration);
+    if (loading === false) setPlaying(false);
+    if (loading === true) setPlaying(true);
+  }, [loading]);
 
-    return () => clearTimeout(timeout);
-  }, [duration]);
+  // Сценарій 2: якщо loading немає, але є duration
+  useEffect(() => {
+    if (loading === undefined && duration) {
+      setPlaying(true);
+      const timer = setTimeout(() => setPlaying(false), duration);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, duration]);
 
-  if (loading === undefined && !playing) return null;
-  if (!loading && loading !== undefined) return null;
+  // Сценарій 3: якщо немає loading і duration, граємо один раз
+  const handleEnded = () => {
+    if (loading === undefined && !duration) setPlaying(false);
+  };
+
+  if (!playing) return null;
 
   return (
-    <div className="absolute top-1/2 left-1/2 transform translate-x-[-50%] translate-y-[-50%] z-5">
-      <img
-        height={size}
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+      <video
         width={size}
-        src={`/assets/animatedEmoji/${name}.webp`}
-        alt={name}
+        height={size}
+        autoPlay
+        muted
+        playsInline
+        loop={!!loading || (!!duration && loading === undefined)}
+        onEnded={handleEnded}
+        src={`/assets/animatedEmoji/${name}.webm`}
       />
     </div>
   );
