@@ -4,7 +4,7 @@ import { EMOJI } from "../components/emoji/Emoji";
 import EmptyDashboard from "../components/emptyDashboard/EmptyDashboard";
 import DishesDashboard from "../components/dishesDashboard/DishesDashboard";
 import { useDishesStore } from "../store/dishedStore";
-import Loader, { LOADER_GIFS } from "../components/loader/Loader";
+import Loader, { LOADER_EMOJIES } from "../components/loader/Loader";
 
 export default function Dishes() {
   const { dishes } = useDishesStore();
@@ -29,7 +29,7 @@ export default function Dishes() {
         <Loader
           loading={loading}
           size={256}
-          name={LOADER_GIFS.forkAndKnife}
+          name={LOADER_EMOJIES.forkAndKnife}
         />
       ) : dishes && dishes.length != 0 ? (
         <DishesDashboard />

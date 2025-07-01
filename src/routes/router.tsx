@@ -8,12 +8,17 @@ import Menus from "../pages/Menus";
 import Dishes from "../pages/Dishes";
 import LayoutSidebar from "./layouts/LayoutSidebar";
 import RandomMeals from "../pages/RandomMeals";
+import Error from "../pages/Error";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <LayoutDefault />,
     children: [
+      {
+        path: "*",
+        element: <Error />,
+      },
       {
         path: "/",
         element: <Home />,

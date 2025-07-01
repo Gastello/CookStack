@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const LOADER_GIFS = {
+export const LOADER_EMOJIES = {
   pan: "Cooking",
   dice: "Dice",
   memo: "Memo",
@@ -13,14 +13,14 @@ export const LOADER_GIFS = {
   sandwich: "Sandwich",
 };
 type LoaderProps = {
-  name?: (typeof LOADER_GIFS)[keyof typeof LOADER_GIFS];
+  name?: (typeof LOADER_EMOJIES)[keyof typeof LOADER_EMOJIES];
   size?: number;
   duration?: number;
   loading?: boolean;
 };
 export default function Loader({
   size = 128,
-  name = LOADER_GIFS.pan,
+  name = LOADER_EMOJIES.pan,
   loading,
   duration,
 }: LoaderProps) {
