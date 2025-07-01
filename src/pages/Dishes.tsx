@@ -29,7 +29,7 @@ export default function Dishes() {
         <Loader
           loading={loading}
           size={256}
-          name={LOADER_GIFS.hamburger}
+          name={LOADER_GIFS.forkAndKnife}
         />
       ) : dishes && dishes.length != 0 ? (
         <DishesDashboard />
