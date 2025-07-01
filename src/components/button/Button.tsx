@@ -1,14 +1,25 @@
+import type { ANIMATED_EMOJI } from "../animatedEmoji/AnimatedEmoji";
+import AnimatedEmoji from "../animatedEmoji/AnimatedEmoji";
 import type { EMOJI } from "../emoji/Emoji";
 import Emoji from "../emoji/Emoji";
 
-type ButtonProps = {
+type ButtonPropsBaseProps = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   text: string;
   color?: string;
   textColor?: string;
-  icon?: (typeof EMOJI)[keyof typeof EMOJI];
   isDisabled?: boolean;
 };
+
+type ButtonProps =
+  | (ButtonPropsBaseProps & {
+      animIcon?: never;
+      icon?: (typeof EMOJI)[keyof typeof EMOJI];
+    })
+  | (ButtonPropsBaseProps & {
+      animIcon?: (typeof ANIMATED_EMOJI)[keyof typeof ANIMATED_EMOJI];
+      icon?: never;
+    });
 
 export default function Button({
   onClick = () => {},
@@ -16,6 +27,7 @@ export default function Button({
   color = "#16A34A",
   textColor = "#ffffff",
   icon,
+  animIcon,
   isDisabled = false,
 }: ButtonProps) {
   return (
@@ -33,6 +45,11 @@ export default function Button({
       {icon && (
         <span className="mr-[10px]">
           <Emoji name={icon} size="14px" />
+        </span>
+      )}
+      {animIcon && (
+        <span className="mr-[10px]">
+          <AnimatedEmoji isPlaying={false} name={animIcon} size="20px" />
         </span>
       )}
       {text}
