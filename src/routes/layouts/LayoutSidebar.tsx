@@ -11,7 +11,7 @@ export default function LayoutSidebar() {
   return (
     <div className="flex h-full">
       <Sidebar />
-      <div className="h-full grow">
+      <div className="h-full grow ralative">
         <Outlet />
       </div>
       <Toaster />

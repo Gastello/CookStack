@@ -17,7 +17,7 @@ export default function Dishes() {
   }, [fetchDishes]);
 
   return (
-    <div className="ralative flex flex-col h-full p-[30px]">
+    <div className="relative flex flex-col h-full p-[30px]">
       <DashboardHeader
         title="My Dishes"
         subtitle="Browse and manage your dish collection"
@@ -27,7 +27,7 @@ export default function Dishes() {
       />
       {loading ? (
         <Loader
-          loading={loading}
+          loading={true}
           size={256}
           name={LOADER_EMOJIES.forkAndKnife}
         />

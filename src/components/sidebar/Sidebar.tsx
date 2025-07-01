@@ -50,7 +50,7 @@ export default function Sidebar() {
             }
             to={"/menus"}
           >
-            <Emoji name={EMOJI.clipboard} size="14px" /> My Menus
+            <Emoji name={EMOJI.memo} size="14px" /> My Menus
           </NavLink>
           <NavLink
             className={({ isActive }) =>

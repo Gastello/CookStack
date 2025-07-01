@@ -12,7 +12,7 @@ export default function Menus() {
         btnIcon={EMOJI.memo}
       />
       <EmptyDashboard
-        emoji={EMOJI.clipboard}
+        emoji={EMOJI.memo}
         title="No menus yet"
         subtitle="Start by creating your first menu to organize your meals"
         btnText="Create your first menu"
