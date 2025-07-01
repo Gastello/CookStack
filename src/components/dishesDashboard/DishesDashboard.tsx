@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useDishesStore } from "../../store/dishedStore";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import Tag from "../tag/Tag";
@@ -19,7 +20,7 @@ export default function DishesDashboard() {
             <div className="flex justify-between gap-[5px]">
               <div>
                 <div className="font-medium text-left text-[16px] text-[#1F2937] mb-[8px]">
-                  {dish.name}
+                  <Link to={dish.id}>{dish.name}</Link>
                 </div>
                 <div className="text-[12px]/[20px] text-[#6B7280]">
                   <span className="mr-[5px]">

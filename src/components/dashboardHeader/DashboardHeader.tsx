@@ -4,8 +4,8 @@ import { EMOJI } from "../emoji/Emoji";
 type DashboardHeaderProps = {
   title: string;
   subtitle: string;
-  btnText: string;
-  btnIcon: (typeof EMOJI)[keyof typeof EMOJI];
+  btnText?: string;
+  btnIcon?: (typeof EMOJI)[keyof typeof EMOJI];
   btnEvent?: () => void;
 };
 export default function DashboardHeader({
@@ -24,13 +24,15 @@ export default function DashboardHeader({
         <div className="text-[14px]/[24px] text-[#6B7280]">{subtitle}</div>
       </div>
       <div>
-        <Button
-          onClick={btnEvent}
-          text={btnText}
-          icon={btnIcon}
-          color="#F0FDF4"
-          textColor="#16A34A"
-        />
+        {btnText && (
+          <Button
+            onClick={btnEvent}
+            text={btnText}
+            icon={btnIcon}
+            color="#F0FDF4"
+            textColor="#16A34A"
+          />
+        )}
       </div>
     </div>
   );

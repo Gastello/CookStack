@@ -15,6 +15,7 @@ export type DishType = {
   isFav: boolean;
   tags?: TagType[];
   img?: string;
+  description?: string;
 };
 
 type DishesState = {
@@ -26,6 +27,7 @@ type DishesState = {
   removeDish: (id: string) => Promise<void>;
   updateDish: (dish: DishType) => Promise<void>;
   makeFav: (id: string) => Promise<void>;
+  getDishById: (id: string) => DishType | undefined;
 };
 
 export const useDishesStore = create<DishesState>((set, get) => ({
@@ -52,6 +54,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
           calories,
           is_fav,
           img_url,
+          description,
           dish_tags (
             tag_id,
             tags (
@@ -96,6 +99,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
           time: 0,
           calories: 0,
           is_fav: false,
+          description: "Add tags and notes to personalize this dish.",
         })
         .select()
         .single();
@@ -110,6 +114,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
         calories: newDishData.calories,
         isFav: newDishData.is_fav,
         img: newDishData.img_url ?? undefined,
+        description: newDishData.description,
       };
 
       set((state) => ({ dishes: [...state.dishes, newDish], loading: false }));
@@ -156,6 +161,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
           calories: dish.calories,
           is_fav: dish.isFav,
           img_url: dish.img,
+          description: dish.description,
         })
         .eq("id", dish.id)
         .eq("user_id", user.id);
@@ -232,6 +238,13 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       set({ error: errorMessage, loading: false });
     }
   },
+
+  getDishById: (id: string) => {
+    const { dishes } = get();
+    return dishes.find((dish) => dish.id === id);
+  },
+
+  //
 }));
 
 type SupabaseDishTag = {
@@ -249,6 +262,7 @@ type SupabaseDish = {
   calories: number;
   is_fav: boolean;
   img_url?: string;
+  description: string;
   dish_tags: SupabaseDishTag[];
 };
 
@@ -260,6 +274,7 @@ function mapSupabaseDataToDishType(supabaseDishes: SupabaseDish[]): DishType[] {
     calories: dish.calories,
     isFav: dish.is_fav,
     img: dish.img_url ?? undefined,
+    description: dish.description,
     tags: dish.dish_tags.map((dt) => ({
       tag_id: dt.tag_id,
       text: Array.isArray(dt.tags)

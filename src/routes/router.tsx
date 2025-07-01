@@ -9,6 +9,7 @@ import Dishes from "../pages/Dishes";
 import LayoutSidebar from "./layouts/LayoutSidebar";
 import RandomMeals from "../pages/RandomMeals";
 import Error from "../pages/Error";
+import DishDetails from "../pages/DishDetails";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,15 @@ const router = createBrowserRouter([
     children: [
       {
         path: "*",
-        element: <Error />,
+        element: (
+          <Error
+            header="Oops! We overcooked this page."
+            text={`The recipe you're looking for is missing... But don't worry — the rest of the kitchen is still open!`}
+            showBtn={true}
+            btnText="Go to CookStack Home"
+            btnPath="/"
+          />
+        ),
       },
       {
         path: "/",
@@ -48,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "dishes",
         element: <Dishes />,
+      },
+      {
+        path: `dishes/:id`,
+        element: <DishDetails />,
       },
       {
         path: "random-meals",
