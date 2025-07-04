@@ -85,18 +85,28 @@ export const useTagsStore = create<TagsState>((set, get) => ({
       });
 
       if (error) throw error;
-      if (!isTagFromRPC(data)) throw new Error("Invalid tag format");
+
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        throw new Error("Empty response from create_tag");
+      }
+
+      const firstTag = data[0];
+
+      if (!isTagFromRPC(firstTag)) throw new Error("Invalid tag format");
 
       const newTag: TagType = {
-        id: data.id,
-        text: data.text,
-        color: data.color,
+        id: firstTag.id,
+        text: firstTag.text,
+        color: firstTag.color,
       };
 
-      set((state) => ({
-        tags: [...state.tags, newTag],
-        loading: false,
-      }));
+      set((state) => {
+        const newTags = [...state.tags, newTag];
+        return {
+          tags: newTags,
+          loading: false,
+        };
+      });
     } catch (err) {
       set({
         error: err instanceof Error ? err.message : String(err),
@@ -108,8 +118,15 @@ export const useTagsStore = create<TagsState>((set, get) => ({
   removeTag: async (id) => {
     set({ loading: true, error: null });
     try {
-      const { error } = await supabase.rpc("delete_tag", { p_tag_id: id });
+      const { data, error } = await supabase.rpc("delete_tag", {
+        p_tag_id: id,
+      });
       if (error) throw error;
+
+      // data має бути кількість видалених рядків (integer)
+      if (!data || data === 0) {
+        throw new Error("Tag not found or not deleted");
+      }
 
       set((state) => ({
         tags: state.tags.filter((tag) => tag.id !== id),

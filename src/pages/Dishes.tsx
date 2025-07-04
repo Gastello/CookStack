@@ -72,21 +72,22 @@ export default function Dishes() {
             </button>
             <button
               onClick={() => {
-                const tag = getTagById("a5963615-1ea5-434f-ade8-aa0282ff472f");
+                const id = tags[0].id;
+                const tag = getTagById(id);
                 if (tag) {
                   updateTag({
                     color: "#000000",
-                    id: "a5963615-1ea5-434f-ade8-aa0282ff472f",
+                    id: id,
                     text: tag.text === "Test" ? "Updated" : "Test",
                   });
-                } 
+                }
               }}
             >
               UPDATE
             </button>
             <button
               onClick={() => {
-                removeTag("f252cbc9-b42c-4fbe-a500-68e232546d8b");
+                removeTag(tags[0].id);
               }}
             >
               DELETE
