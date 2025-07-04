@@ -13,22 +13,62 @@ export type DishType = {
   time: number;
   calories: number;
   isFav: boolean;
-  tags?: TagType[];
-  img?: string;
   description?: string;
+  img?: string;
+  tags: TagType[];
 };
 
 type DishesState = {
   dishes: DishType[];
   loading: boolean;
   error: string | null;
+
   fetchDishes: () => Promise<void>;
   addDish: () => Promise<void>;
-  removeDish: (id: string) => Promise<void>;
   updateDish: (dish: DishType) => Promise<void>;
+  removeDish: (id: string) => Promise<void>;
   makeFav: (id: string) => Promise<void>;
+
   getDishById: (id: string) => DishType | undefined;
 };
+
+type RPCDishCommon = {
+  name: string;
+  time: number;
+  calories: number;
+  is_fav: boolean;
+  description: string | null;
+  img_url: string | null;
+  tags: Array<{
+    tag_id: string;
+    text: string;
+    color: string;
+  }>;
+};
+
+// Від fetch функцій (має поле id)
+type RPCDishWithId = RPCDishCommon & { id: string };
+// Від create/update функцій (має поле dish_id)
+type RPCDishWithDishId = RPCDishCommon & { dish_id: string };
+
+function mapRPCDishesToDishType(
+  data: Array<RPCDishWithId | RPCDishWithDishId>
+): DishType[] {
+  return data.map((dish) => ({
+    id: "id" in dish ? dish.id : dish.dish_id,
+    name: dish.name,
+    time: dish.time,
+    calories: dish.calories,
+    isFav: dish.is_fav,
+    description: dish.description ?? undefined,
+    img: dish.img_url ?? undefined,
+    tags: dish.tags.map((t) => ({
+      tag_id: t.tag_id,
+      text: t.text,
+      color: t.color,
+    })),
+  }));
+}
 
 export const useDishesStore = create<DishesState>((set, get) => ({
   dishes: [],
@@ -41,44 +81,22 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
       if (!user) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase
-        .from("dishes")
-        .select(
-          `
-          id,
-          name,
-          time,
-          calories,
-          is_fav,
-          img_url,
-          description,
-          dish_tags (
-            tag_id,
-            tags (
-              text,
-              color
-            )
-          )
-        `
-        )
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-
-      const mapped = mapSupabaseDataToDishType(data ?? []).sort((a, b) => {
-        if (!a && !b) return 0;
-        if (!a) return 1;
-        if (!b) return -1;
-        return Number(b.isFav) - Number(a.isFav);
+      const { data, error } = await supabase.rpc("get_all_dishes_with_tags", {
+        p_user_id: user.id,
       });
-      set({ dishes: mapped, loading: false });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
+      if (error) throw error;
+      if (!data) throw new Error("No dishes returned");
+
+      const dishes: DishType[] = mapRPCDishesToDishType(data);
+
+      set({ dishes, loading: false });
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : String(err),
+        loading: false,
+      });
     }
   },
 
@@ -90,57 +108,34 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // 1. Insert dish without tags first (tags треба додавати окремо)
-      const { data: newDishData, error: insertError } = await supabase
-        .from("dishes")
-        .insert({
-          user_id: user.id,
-          name: "New dish",
-          time: 0,
-          calories: 0,
-          is_fav: false,
-          description: "Add tags and notes to personalize this dish.",
-        })
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      // 2. Оновити локальний стан - додати нову страву
-      const newDish: DishType = {
-        id: newDishData.id,
-        name: newDishData.name,
-        time: newDishData.time,
-        calories: newDishData.calories,
-        isFav: newDishData.is_fav,
-        img: newDishData.img_url ?? undefined,
-        description: newDishData.description,
-      };
-
-      set((state) => ({ dishes: [...state.dishes, newDish], loading: false }));
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
-    }
-  },
-
-  removeDish: async (id) => {
-    set({ loading: true, error: null });
-    try {
-      // Видаляємо блюдо - через ON DELETE CASCADE dish_tags видаляться автоматично
-      const { error } = await supabase.from("dishes").delete().eq("id", id);
+      const { data, error } = await supabase.rpc(
+        "create_or_update_dish_with_tags",
+        {
+          p_dish_id: null,
+          p_user_id: user.id,
+          p_name: "New dish",
+          p_time: 0,
+          p_calories: 0,
+          p_is_fav: false,
+          p_description: null,
+          p_img_url: null,
+          p_tag_ids: [],
+        }
+      );
       if (error) throw error;
+      if (!data || data.length === 0) throw new Error("Failed to create dish");
 
-      // Оновлюємо локальний стан - прибираємо блюдо
+      const newDish = mapRPCDishesToDishType(data)[0];
+
       set((state) => ({
-        dishes: state.dishes.filter((dish) => dish.id !== id),
+        dishes: [...state.dishes, newDish],
         loading: false,
       }));
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : String(err),
+        loading: false,
+      });
     }
   },
 
@@ -152,54 +147,64 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // 1. Оновлюємо поля страви (без тегів)
-      const { error: updateError } = await supabase
-        .from("dishes")
-        .update({
-          name: dish.name,
-          time: dish.time,
-          calories: dish.calories,
-          is_fav: dish.isFav,
-          img_url: dish.img,
-          description: dish.description,
-        })
-        .eq("id", dish.id)
-        .eq("user_id", user.id);
+      const tagIds = dish.tags.map((t) => t.tag_id);
 
-      if (updateError) throw updateError;
+      const { data, error } = await supabase.rpc(
+        "create_or_update_dish_with_tags",
+        {
+          p_dish_id: dish.id,
+          p_user_id: user.id,
+          p_name: dish.name,
+          p_time: dish.time,
+          p_calories: dish.calories,
+          p_is_fav: dish.isFav,
+          p_description: dish.description ?? null,
+          p_img_url: dish.img ?? null,
+          p_tag_ids: tagIds,
+        }
+      );
+      if (error) throw error;
+      if (!data || data.length === 0) throw new Error("Failed to update dish");
 
-      // 2. Оновлюємо теги:
-      // Видаляємо існуючі зв’язки
-      const { error: deleteTagsError } = await supabase
-        .from("dish_tags")
-        .delete()
-        .eq("dish_id", dish.id);
+      const updatedDish = mapRPCDishesToDishType(data)[0];
 
-      if (deleteTagsError) throw deleteTagsError;
-
-      // Додаємо нові зв’язки
-      if (dish.tags && dish.tags.length > 0) {
-        const dishTagsRows = dish.tags.map((tag) => ({
-          dish_id: dish.id,
-          tag_id: tag.tag_id,
-        }));
-
-        const { error: insertTagsError } = await supabase
-          .from("dish_tags")
-          .insert(dishTagsRows);
-
-        if (insertTagsError) throw insertTagsError;
-      }
-
-      // 3. Оновлюємо локальний стан - замінюємо блюдо
       set((state) => ({
-        dishes: state.dishes.map((d) => (d.id === dish.id ? dish : d)),
+        dishes: state.dishes.map((d) =>
+          d.id === updatedDish.id ? updatedDish : d
+        ),
         loading: false,
       }));
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : String(err),
+        loading: false,
+      });
+    }
+  },
+
+  removeDish: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase.rpc("delete_dish_with_tags", {
+        p_dish_id: id,
+        p_user_id: user.id,
+      });
+      if (error) throw error;
+
+      set((state) => ({
+        dishes: state.dishes.filter((d) => d.id !== id),
+        loading: false,
+      }));
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : String(err),
+        loading: false,
+      });
     }
   },
 
@@ -216,73 +221,44 @@ export const useDishesStore = create<DishesState>((set, get) => ({
 
       const newFav = !dish.isFav;
 
-      const { error } = await supabase
-        .from("dishes")
-        .update({ is_fav: newFav })
-        .eq("id", id)
-        .eq("user_id", user.id);
+      const tagIds = dish.tags.map((t) => t.tag_id);
 
+      const { data, error } = await supabase.rpc(
+        "create_or_update_dish_with_tags",
+        {
+          p_dish_id: dish.id,
+          p_user_id: user.id,
+          p_name: dish.name,
+          p_time: dish.time,
+          p_calories: dish.calories,
+          p_is_fav: newFav,
+          p_description: dish.description ?? null,
+          p_img_url: dish.img ?? null,
+          p_tag_ids: tagIds,
+        }
+      );
       if (error) throw error;
+      if (!data || data.length === 0)
+        throw new Error("Failed to toggle favorite");
 
-      const updatedDishes = get()
-        .dishes.map((d) => (d.id === id ? { ...d, isFav: newFav } : d))
-        .sort((a, b) => Number(b.isFav) - Number(a.isFav));
+      const updatedDish = mapRPCDishesToDishType(data)[0];
 
+      set((state) => ({
+        dishes: state.dishes
+          .map((d) => (d.id === id ? updatedDish : d))
+          .sort((a, b) => Number(b.isFav) - Number(a.isFav)),
+        loading: false,
+      }));
+    } catch (err) {
       set({
-        dishes: updatedDishes,
+        error: err instanceof Error ? err.message : String(err),
         loading: false,
       });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
     }
   },
 
-  getDishById: (id: string) => {
+  getDishById: (id) => {
     const { dishes } = get();
-    return dishes.find((dish) => dish.id === id);
+    return dishes.find((d) => d.id === id);
   },
-
-  //
 }));
-
-type SupabaseDishTag = {
-  tag_id: string;
-  tags: {
-    text: string;
-    color: string;
-  }[];
-};
-
-type SupabaseDish = {
-  id: string;
-  name: string;
-  time: number;
-  calories: number;
-  is_fav: boolean;
-  img_url?: string;
-  description: string;
-  dish_tags: SupabaseDishTag[];
-};
-
-function mapSupabaseDataToDishType(supabaseDishes: SupabaseDish[]): DishType[] {
-  return supabaseDishes.map((dish) => ({
-    id: dish.id,
-    name: dish.name,
-    time: dish.time,
-    calories: dish.calories,
-    isFav: dish.is_fav,
-    img: dish.img_url ?? undefined,
-    description: dish.description,
-    tags: dish.dish_tags.map((dt) => ({
-      tag_id: dt.tag_id,
-      text: Array.isArray(dt.tags)
-        ? dt.tags[0]?.text ?? ""
-        : (dt.tags as { text?: string; color?: string })?.text ?? "",
-      color: Array.isArray(dt.tags)
-        ? dt.tags[0]?.color ?? ""
-        : (dt.tags as { text?: string; color?: string })?.color ?? "",
-    })),
-  }));
-}

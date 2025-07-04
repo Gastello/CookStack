@@ -4,10 +4,8 @@ import Emoji, { EMOJI } from "../emoji/Emoji";
 import Tag from "../tag/Tag";
 
 export default function DishesDashboard() {
-  const { dishes } = useDishesStore();
-  const { makeFav } = useDishesStore();
-  //   const { removeDish } = useDishesStore();
-  //   const { updateDish } = useDishesStore();
+  const dishes = useDishesStore((s) => s.dishes);
+  const makeFav = useDishesStore((s) => s.makeFav);
 
   return (
     <div className="mt-[20px] grid grid-cols-4 gap-[20px]">
@@ -54,11 +52,7 @@ export default function DishesDashboard() {
                 {dish.tags &&
                   dish.tags.map((tag) => {
                     return (
-                      <Tag
-                        key={`${tag.text}_${tag.color}`}
-                        color={tag.color}
-                        text={tag.text}
-                      />
+                      <Tag key={tag.tag_id} color={tag.color} text={tag.text} />
                     );
                   })}
               </div>
