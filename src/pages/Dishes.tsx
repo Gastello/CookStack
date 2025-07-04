@@ -12,10 +12,6 @@ export default function Dishes() {
   const { fetchDishes } = useDishesStore();
   const { loading } = useDishesStore();
   const { addDish } = useDishesStore();
-  const { updateDish } = useDishesStore();
-  const { removeDish } = useDishesStore();
-  const { getDishById } = useDishesStore();
-
   const { fetchTags } = useTagsStore();
 
   useEffect(() => {

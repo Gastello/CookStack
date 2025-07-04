@@ -69,12 +69,16 @@ export default function DishDetails() {
               <div className=" text-gray-500 text-[14px]/[20px]">
                 <span className="font-medium">Time:</span> {dish?.time} min
               </div>
-              <div className=" text-gray-500 font-medium text-[14px]/[20px]">
-                Description:
-              </div>
-              <div className="text-gray-500 text-[14px]/[20px]">
-                {dish?.description}
-              </div>
+              {dish?.description && (
+                <>
+                  <div className=" text-gray-500 font-medium text-[14px]/[20px]">
+                    Description:
+                  </div>
+                  <div className="text-gray-500 text-[14px]/[20px]">
+                    {dish.description}
+                  </div>
+                </>
+              )}
             </div>
             <div>
               {dish?.img && (
