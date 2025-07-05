@@ -135,10 +135,25 @@ export const useDishesStore = create<DishesState>((set, get) => ({
   },
 
   updateDish: async (dish) => {
+    // Валідація required полів
+    if (!dish.name.trim()) {
+      throw new Error("Name cannot be empty");
+    }
+    if (!dish.time || isNaN(dish.time)) {
+      throw new Error("Time must be a valid number greater than zero");
+    }
+    if (!dish.calories || isNaN(dish.calories)) {
+      throw new Error("Calories must be a valid number greater than zero");
+    }
     set({ loading: true, error: null });
 
     try {
       const currentDish = get().dishes.find((d) => d.id === dish.id);
+
+      const rawImg = dish.img?.trim();
+      const isValidImg = rawImg && isValidUrl(rawImg);
+      const finalImg = isValidImg ? rawImg : currentDish?.img ?? null;
+
       if (currentDish) {
         const unchanged =
           currentDish.name === dish.name &&
@@ -146,7 +161,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
           currentDish.calories === dish.calories &&
           currentDish.isFav === dish.isFav &&
           currentDish.description === dish.description &&
-          currentDish.img === dish.img &&
+          currentDish.img === finalImg &&
           JSON.stringify(currentDish.tags.map((t) => t.id).sort()) ===
             JSON.stringify(dish.tags.map((t) => t.id).sort());
 
@@ -174,7 +189,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
           p_calories: dish.calories,
           p_is_fav: dish.isFav,
           p_description: dish.description ?? null,
-          p_img_url: dish.img ?? null,
+          p_img_url: finalImg,
           p_tag_ids: tagIds,
         }
       );
@@ -277,3 +292,12 @@ export const useDishesStore = create<DishesState>((set, get) => ({
     return dishes.find((d) => d.id === id);
   },
 }));
+
+function isValidUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}

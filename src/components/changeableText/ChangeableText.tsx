@@ -75,7 +75,9 @@ export default function ChangeableText({
     <div
       ref={divRef}
       className={`inline-block relative ${
-        editable ? "focus:outline-none" : "cursor-default select-none"
+        editable
+          ? "focus:outline-none border rounded-sm px-1 w-full"
+          : "cursor-default select-none"
       } ${styles}`}
       contentEditable={editable}
       suppressContentEditableWarning

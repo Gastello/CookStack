@@ -67,7 +67,7 @@ export default function Input({
 
         <div
           style={{ color: placeholderColor }}
-          className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-white"
+          className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-white rounded-2xl"
         >
           {placeholderEmoji && (
             <span className="mr-[10px]">
