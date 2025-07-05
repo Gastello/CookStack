@@ -72,9 +72,9 @@ export default function ChangeableText({
         const range = selection.getRangeAt(0);
         range.deleteContents();
         range.insertNode(document.createTextNode(clean));
-        range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range);
+
+        const newText = (divRef.current?.innerText || "").trim();
+        onChange(cleanText(newText));
       }}
       style={{
         minWidth: "1ch",
