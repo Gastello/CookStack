@@ -47,6 +47,7 @@ export default function Dishes() {
           title="No dishes yet"
           subtitle="Start by adding your favorite dishes to your collection"
           btnText="Add your first dish"
+          onClick={addDish}
         />
       )}
     </div>

@@ -7,8 +7,17 @@ export default function DishesDashboard() {
   const dishes = useDishesStore((s) => s.dishes);
   const makeFav = useDishesStore((s) => s.makeFav);
 
+  const colsClass = [
+    "grid-cols-1",
+    "grid-cols-2",
+    "grid-cols-3",
+    "grid-cols-4",
+  ];
+
+  const cols = Math.min(dishes.length, 4);
+
   return (
-    <div className="mt-[20px] grid grid-cols-4 gap-[20px]">
+    <div className={`mt-[20px] grid ${colsClass[cols - 1]} gap-[20px]`}>
       {dishes.map((dish) => {
         return (
           <div

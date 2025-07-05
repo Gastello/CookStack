@@ -32,7 +32,7 @@ export default function Sidebar() {
     }
   };
   return (
-    <div className="max-w-[256px] w-full bg-white h-screen py-[30px] px-[24px]">
+    <div className="max-w-[256px] w-full bg-white h-screen py-[30px] px-[24px] select-none">
       <div>
         <div className="px-[40px]">
           <Logo />

@@ -29,7 +29,7 @@ export default function Register() {
         console.error("Registration error:", error);
       } else if (data?.user) {
         addToast(true, "You’ve successfully registered!");
-        navigate("/login");
+        navigate("/dishes");
       }
     } catch (err) {
       console.error("Unexpected error:", err);

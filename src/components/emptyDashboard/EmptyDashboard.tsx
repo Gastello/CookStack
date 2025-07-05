@@ -6,12 +6,14 @@ type EmptyDashboardProps = {
   title: string;
   subtitle: string;
   btnText?: string;
+  onClick?: () => void;
 };
 export default function EmptyDashboard({
   emoji,
   title,
   subtitle,
   btnText,
+  onClick
 }: EmptyDashboardProps) {
   return (
     <div className="flex grow items-center justify-center">
@@ -32,6 +34,7 @@ export default function EmptyDashboard({
               textColor="#16A34A"
               color="#F0FDF4"
               text={btnText}
+              onClick={onClick}
             />
           </div>
         )}
