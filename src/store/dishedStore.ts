@@ -1,11 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "../auth/auth";
-
-export type TagType = {
-  tag_id: string;
-  text: string;
-  color: string;
-};
+import type { TagType } from "./tagsStore";
 
 export type DishType = {
   id: string;
@@ -46,9 +41,7 @@ type RPCDishCommon = {
   }>;
 };
 
-// Від fetch функцій (має поле id)
 type RPCDishWithId = RPCDishCommon & { id: string };
-// Від create/update функцій (має поле dish_id)
 type RPCDishWithDishId = RPCDishCommon & { dish_id: string };
 
 function mapRPCDishesToDishType(
@@ -62,11 +55,13 @@ function mapRPCDishesToDishType(
     isFav: dish.is_fav,
     description: dish.description ?? undefined,
     img: dish.img_url ?? undefined,
-    tags: dish.tags.map((t) => ({
-      tag_id: t.tag_id,
-      text: t.text,
-      color: t.color,
-    })),
+    tags: dish.tags.map(
+      (t): TagType => ({
+        id: t.tag_id,
+        text: t.text,
+        color: t.color,
+      })
+    ),
   }));
 }
 
@@ -147,7 +142,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const tagIds = dish.tags.map((t) => t.tag_id);
+      const tagIds = dish.tags.map((t) => t.id);
 
       const { data, error } = await supabase.rpc(
         "create_or_update_dish_with_tags",
@@ -220,8 +215,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       if (!user) throw new Error("User not authenticated");
 
       const newFav = !dish.isFav;
-
-      const tagIds = dish.tags.map((t) => t.tag_id);
+      const tagIds = dish.tags.map((t) => t.id);
 
       const { data, error } = await supabase.rpc(
         "create_or_update_dish_with_tags",

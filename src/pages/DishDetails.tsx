@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDishesStore, type DishType } from "../store/dishedStore";
 import Loader, { LOADER_EMOJIES } from "../components/loader/Loader";
 import DashboardHeader from "../components/dashboardHeader/DashboardHeader";
-import Tag from "../components/tag/Tag";
 import Error from "./Error";
+import Button from "../components/button/Button";
+import { EMOJI } from "../components/emoji/Emoji";
+import DishDetailsItem from "../components/dishDetailsItem/DishDetailsItem";
 // import { useTagsStore } from "../store/tagsStore";
 
 export default function DishDetails() {
   const { id } = useParams<{ id: string }>();
-  const { getDishById, fetchDishes, loading, dishes } = useDishesStore();
+  const { getDishById, fetchDishes, removeDish, loading, dishes } =
+    useDishesStore();
   //   const {
   //     addTag,
   //     error,
@@ -19,6 +22,8 @@ export default function DishDetails() {
   //     updateTag,
   //   } = useTagsStore();
   const [dish, setDish] = useState<DishType | undefined>(undefined);
+
+  const navigate = useNavigate();
 
   // Завантажуємо dishes якщо їх ще нема
   useEffect(() => {
@@ -53,64 +58,36 @@ export default function DishDetails() {
       <DashboardHeader
         title="My Dishes"
         subtitle="Browse and manage your dish collection"
-      />
+      >
+        <div className="flex self-baseline gap-[20px]">
+          <div>
+            <Button
+              text="Save"
+              icon={EMOJI.checkmarkTrue}
+              color="#F0FDF4"
+              textColor="#16A34A"
+            />
+          </div>
+          <div>
+            <Button
+              onClick={() => {
+                if (dish?.id) {
+                  removeDish(dish.id);
+                  navigate("/dishes");
+                }
+              }}
+              text="Delete"
+              icon={EMOJI.checkmarkFalse}
+              color="#FDF0F0"
+              textColor="#A31616"
+            />
+          </div>
+        </div>
+      </DashboardHeader>
       {loading ? (
         <Loader loading={loading} name={LOADER_EMOJIES.hamburger} />
       ) : (
-        <div className="mt-[20px] max-w-[800px] w-full rounded-2xl bg-white shadow-sm p-[20px] mx-auto">
-          <div className="flex justify-between">
-            <div>
-              <div className="text-lg font-medium text-gray-800 mb-[5px]">
-                {dish?.name}
-              </div>
-              <div className="text-gray-500 text-[14px]/[20px]">
-                <span className="font-medium">Calories:</span> {dish?.calories}
-              </div>
-              <div className=" text-gray-500 text-[14px]/[20px]">
-                <span className="font-medium">Time:</span> {dish?.time} min
-              </div>
-              {dish?.description && (
-                <>
-                  <div className=" text-gray-500 font-medium text-[14px]/[20px]">
-                    Description:
-                  </div>
-                  <div className="text-gray-500 text-[14px]/[20px]">
-                    {dish.description}
-                  </div>
-                </>
-              )}
-            </div>
-            <div>
-              {dish?.img && (
-                <div className="mb-[10px]">
-                  <div
-                    style={{
-                      backgroundImage: dish.img
-                        ? `url(${dish.img})`
-                        : `url(/assets/emoji/pan.png)`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      backgroundRepeat: "no-repeat",
-                    }}
-                    className="w-[256px] h-[256px] rounded-lg "
-                  ></div>
-                </div>
-              )}
-              <div className="flex gap-[5px] flex-wrap">
-                {dish?.tags &&
-                  dish.tags.map((tag) => {
-                    return (
-                      <Tag
-                        key={`${tag.text}_${tag.color}`}
-                        color={tag.color}
-                        text={tag.text}
-                      />
-                    );
-                  })}
-              </div>
-            </div>
-          </div>
-        </div>
+        <DishDetailsItem dish={dish} />
       )}
     </div>
   );

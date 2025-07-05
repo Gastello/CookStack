@@ -8,7 +8,6 @@ export type TagType = {
   color: string;
 };
 
-// Сиро тип із RPC, який повертає Supabase
 type TagFromRPC = {
   id: string;
   text: string;
@@ -17,9 +16,7 @@ type TagFromRPC = {
 
 function isTagFromRPC(obj: unknown): obj is TagFromRPC {
   if (typeof obj !== "object" || obj === null) return false;
-
   const o = obj as Record<string, unknown>;
-
   return (
     typeof o.id === "string" &&
     typeof o.text === "string" &&
@@ -85,13 +82,11 @@ export const useTagsStore = create<TagsState>((set, get) => ({
       });
 
       if (error) throw error;
-
       if (!data || !Array.isArray(data) || data.length === 0) {
         throw new Error("Empty response from create_tag");
       }
 
       const firstTag = data[0];
-
       if (!isTagFromRPC(firstTag)) throw new Error("Invalid tag format");
 
       const newTag: TagType = {
@@ -100,13 +95,10 @@ export const useTagsStore = create<TagsState>((set, get) => ({
         color: firstTag.color,
       };
 
-      set((state) => {
-        const newTags = [...state.tags, newTag];
-        return {
-          tags: newTags,
-          loading: false,
-        };
-      });
+      set((state) => ({
+        tags: [...state.tags, newTag],
+        loading: false,
+      }));
     } catch (err) {
       set({
         error: err instanceof Error ? err.message : String(err),
@@ -122,8 +114,6 @@ export const useTagsStore = create<TagsState>((set, get) => ({
         p_tag_id: id,
       });
       if (error) throw error;
-
-      // data має бути кількість видалених рядків (integer)
       if (!data || data === 0) {
         throw new Error("Tag not found or not deleted");
       }
@@ -150,8 +140,6 @@ export const useTagsStore = create<TagsState>((set, get) => ({
       });
 
       if (error) throw error;
-
-      // data повертає масив з одним оновленим тегом (через RETURNS TABLE)
       if (!data || !Array.isArray(data) || data.length === 0) {
         throw new Error("Failed to update tag or empty response");
       }
@@ -183,7 +171,6 @@ export const useTagsStore = create<TagsState>((set, get) => ({
       .from("dish_tags")
       .select("tag_id")
       .eq("dish_id", dishId);
-
     if (fetchError) throw fetchError;
 
     const existingTagIds = new Set((existingLinks ?? []).map((r) => r.tag_id));
@@ -204,13 +191,10 @@ export const useTagsStore = create<TagsState>((set, get) => ({
 
     console.log(`✅ Inserted ${toInsert.length} tag(s) into dish_tags.`);
 
-    const newTags = tagIds
+    const newTags: TagType[] = tagIds
       .filter((id) => !existingTagIds.has(id))
-      .map((id) => {
-        const t = tags.find((tag) => tag.id === id);
-        return t ? { tag_id: t.id, text: t.text, color: t.color } : null;
-      })
-      .filter((t): t is { tag_id: string; text: string; color: string } => !!t);
+      .map((id) => tags.find((tag) => tag.id === id))
+      .filter((t): t is TagType => !!t);
 
     const updatedDishes = dishes.map((dish) => {
       if (dish.id !== dishId) return dish;
@@ -222,7 +206,7 @@ export const useTagsStore = create<TagsState>((set, get) => ({
 
     const updated = updatedDishes.find((d) => d.id === dishId);
     if (updated) {
-      updateDish(updated);
+      await updateDish(updated);
     }
 
     console.log("✅ Tags updated in local state.");

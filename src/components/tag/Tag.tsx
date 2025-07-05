@@ -1,6 +1,4 @@
-import type { TagType } from "../../pages/Dishes";
-
-export default function Tag({ text, color }: TagType) {
+export default function Tag({ text, color }: { text: string; color: string }) {
   return (
     <span
       style={{ backgroundColor: color }}
