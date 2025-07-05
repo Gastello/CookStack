@@ -108,6 +108,31 @@ export default function DishDetails() {
               <div>
                 <Button
                   onClick={() => {
+                    setEditable(false);
+                  }}
+                  text="Discard"
+                  icon={EMOJI.checkmarkFalse}
+                  color="#FDF0F0"
+                  textColor="#A31616"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <Button
+                  onClick={() => {
+                    setEditable(true);
+                  }}
+                  text="Change"
+                  icon={EMOJI.pencil}
+                  color="#F0FDF4"
+                  textColor="#16A34A"
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
                     if (dish?.id) {
                       removeDish(dish.id);
                       navigate("/dishes");
@@ -120,18 +145,6 @@ export default function DishDetails() {
                 />
               </div>
             </>
-          ) : (
-            <div>
-              <Button
-                onClick={() => {
-                  setEditable(true);
-                }}
-                text="Change"
-                icon={EMOJI.pencil}
-                color="#F0FDF4"
-                textColor="#16A34A"
-              />
-            </div>
           )}
         </div>
       </DashboardHeader>

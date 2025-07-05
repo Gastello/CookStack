@@ -1,7 +1,7 @@
 import Tag from "../tag/Tag";
-import ChangeableText from "../changeableText/ChangeableText";
 import type { TagType } from "../../store/tagsStore";
 import Input from "../input/Input";
+import { EMOJI } from "../emoji/Emoji";
 
 type DishDetailsItemProps = {
   name: string;
@@ -35,7 +35,125 @@ export default function DishDetailsItem({
   editable = false,
 }: DishDetailsItemProps) {
   return (
-    <div className="mt-[20px] max-w-[800px] w-full rounded-2xl bg-white shadow-sm p-[20px] mx-auto select-none">
+    <div className="relative flex flex-col h-full p-[30px]">
+      <div className="mt-[20px] max-w-[800px] w-full rounded-2xl bg-white shadow-sm p-[20px] mx-auto">
+        {editable ? (
+          <div>
+            <div className="mb-2.5">
+              <Input
+                label="Dish name:"
+                height="16px"
+                placeholderEmoji={EMOJI.forkAndKnife}
+                placeholderColor="#6a7282"
+                onChange={(e) => setName(e.currentTarget.value)}
+                startValue={name}
+              />
+            </div>
+            <div className="mb-2.5">
+              <Input
+                label="Image URL:"
+                startValue={img}
+                height="16px"
+                placeholderEmoji={EMOJI.clipboard}
+                placeholderColor="#6a7282"
+                onChange={(e) => setImg(e.currentTarget.value)}
+              />
+            </div>
+            <div className="flex gap-2.5 mb-2.5">
+              <div className="grow">
+                <Input
+                  label="Calories:"
+                  startValue={calories.toString()}
+                  height="16px"
+                  type="number"
+                  placeholderEmoji={EMOJI.fire}
+                  placeholderColor="#6a7282"
+                  onChange={(e) => setCalories(Number(e.currentTarget.value))}
+                />
+              </div>
+              <div className="grow">
+                <Input
+                  label="Time:"
+                  startValue={time.toString()}
+                  height="16px"
+                  type="number"
+                  placeholderEmoji={EMOJI.clock}
+                  placeholderColor="#6a7282"
+                  onChange={(e) => setTime(Number(e.currentTarget.value))}
+                />
+              </div>
+            </div>
+            <div>
+              <Input
+                label="Description:"
+                startValue={description}
+                height="150px"
+                placeholderEmoji={EMOJI.clock}
+                placeholderColor="#6a7282"
+                isTextArea={true}
+                onChange={(e) => setDescription(e.currentTarget.value)}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-between">
+            <div>
+              <div className="text-lg font-medium text-gray-800 mb-[5px]">
+                {name}
+              </div>
+              <div className="text-gray-500 text-[14px]/[20px]">
+                <span className="font-medium">Calories:</span> {calories}
+              </div>
+              <div className=" text-gray-500 text-[14px]/[20px]">
+                <span className="font-medium">Time:</span> {time} min
+              </div>
+              {description && (
+                <>
+                  <div className=" text-gray-500 font-medium text-[14px]/[20px]">
+                    Description:
+                  </div>
+                  <div className="text-gray-500 text-[14px]/[20px]">
+                    {description}
+                  </div>
+                </>
+              )}
+            </div>
+            <div>
+              {img && (
+                <div className="mb-[10px]">
+                  <div
+                    style={{
+                      backgroundImage: `url(${img})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                    className="w-[256px] h-[256px] rounded-lg "
+                  ></div>
+                </div>
+              )}
+              <div className="flex gap-[5px] flex-wrap">
+                {tags &&
+                  tags.map((tag) => {
+                    return (
+                      <Tag
+                        key={`${tag.text}_${tag.color}`}
+                        color={tag.color}
+                        text={tag.text}
+                      />
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+{
+  /* <div className="mt-[20px] max-w-[800px] w-full rounded-2xl bg-white shadow-sm p-[20px] mx-auto select-none">
       <div className="flex justify-between gap-2.5">
         <div className="min-w-0 flex-1">
           <ChangeableText
@@ -147,6 +265,5 @@ export default function DishDetailsItem({
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div> */
 }

@@ -1,8 +1,10 @@
-import { useId, useState, type HTMLInputTypeAttribute } from "react";
+import { useEffect, useId, useState, type HTMLInputTypeAttribute } from "react";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 
 type InputProps = {
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   label?: string;
   type?: HTMLInputTypeAttribute;
   placeholder?: string;
@@ -13,6 +15,8 @@ type InputProps = {
   min?: number;
   max?: number;
   placeholderColor?: string;
+  isTextArea?: boolean;
+  startValue?: string;
 };
 
 export default function Input({
@@ -27,10 +31,15 @@ export default function Input({
   min,
   max,
   placeholderColor = "#CCCCCC",
+  isTextArea = false,
+  startValue,
 }: InputProps) {
   const id = useId();
   const [value, setValue] = useState("");
 
+  useEffect(() => {
+    if (startValue) setValue(startValue);
+  }, [startValue]);
   const inputStyle =
     "box-border h-[48px] px-[16px] py-[12px] rounded-2xl w-full text-[14px]/[24px] z-10 relative bg-transparent";
 
@@ -45,37 +54,62 @@ export default function Input({
         </label>
       )}
       <div className="relative">
-        <input
-          onChange={(e) => {
-            onChange(e);
-            setValue(e.target.value);
-          }}
-          style={{
-            height: height,
-            width: width,
-            paddingLeft: placeholderEmoji ? "40px" : "16px",
-          }}
-          id={id}
-          type={type}
-          value={value}
-          className={
-            isBordered ? `${inputStyle} border border-[#E5E7EB]` : inputStyle
-          }
-          min={min}
-          max={max}
-        />
-
-        <div
-          style={{ color: placeholderColor }}
-          className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-white rounded-2xl"
-        >
-          {placeholderEmoji && (
-            <span className="mr-[10px]">
-              <Emoji name={placeholderEmoji} size="14px" />
-            </span>
-          )}
-          {value === "" && placeholder}
-        </div>
+        {isTextArea ? (
+          <textarea
+            onChange={(e) => {
+              onChange(e);
+              setValue(e.target.value);
+            }}
+            style={{
+              height: height,
+              width: width,
+              color: placeholderColor,
+            }}
+            id={id}
+            value={value}
+            className={
+              isBordered ? `${inputStyle} border border-[#E5E7EB]` : inputStyle
+            }
+          />
+        ) : (
+          <>
+            <input
+              onChange={(e) => {
+                onChange(e);
+                setValue(e.target.value);
+              }}
+              style={{
+                height: height,
+                width: width,
+                paddingLeft: placeholderEmoji ? "40px" : "16px",
+                color: placeholderColor,
+              }}
+              id={id}
+              type={type}
+              value={value}
+              className={
+                isBordered
+                  ? `${inputStyle} border border-[#E5E7EB]`
+                  : inputStyle
+              }
+              min={min}
+              max={max}
+            />
+            <div
+              style={{ color: placeholderColor }}
+              className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-white rounded-2xl"
+            >
+              {placeholderEmoji && (
+                <span className="mr-[10px]">
+                  <Emoji name={placeholderEmoji} size="14px" />
+                </span>
+              )}
+              <span className="pr-[16px] text-nowrap overflow-hidden">
+                {value === "" && placeholder}
+              </span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
