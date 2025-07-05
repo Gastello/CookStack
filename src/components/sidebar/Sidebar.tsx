@@ -38,7 +38,9 @@ export default function Sidebar() {
           <Logo />
         </div>
         <div className="text-center text-[14px]/[24px] mb-[30px]">
-          <span>Hello, {user?.user_metadata.display_name}!</span>
+          <span className="mr-[5px]">
+            Hello, {user?.user_metadata.display_name}!
+          </span>
           <Emoji size="14px" name={EMOJI.wavingHand} />
         </div>
         <nav className="*:block *:text-[14px]/[24px] *:px-[16px] *:py-[12px] *:rounded-xl *:mb-[8px]">

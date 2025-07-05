@@ -15,6 +15,7 @@ type DishDetailsItemProps = {
   setDescription: (desc: string) => void;
   setImg: (img: string) => void;
   setTags: (tags: TagType[]) => void;
+  editable: boolean;
 };
 
 export default function DishDetailsItem({
@@ -30,6 +31,7 @@ export default function DishDetailsItem({
   setDescription,
   setImg,
   setTags,
+  editable=false,
 }: DishDetailsItemProps) {
   return (
     <div className="mt-[20px] max-w-[800px] w-full rounded-2xl bg-white shadow-sm p-[20px] mx-auto select-none">
@@ -39,6 +41,7 @@ export default function DishDetailsItem({
             styles="text-lg font-medium text-gray-800 mb-[5px]"
             text={name}
             onChange={(val) => setName(val)}
+            editable={editable}
           />
           <div>
             <span className="font-medium text-gray-500 text-[14px]/[20px] mr-[5px]">
@@ -49,6 +52,7 @@ export default function DishDetailsItem({
               text={calories.toString()}
               digitsOnly
               onChange={(val) => setCalories(Number(val))}
+              editable={editable}
             />
           </div>
           <div>
@@ -60,6 +64,7 @@ export default function DishDetailsItem({
               text={time.toString()}
               digitsOnly
               onChange={(val) => setTime(Number(val))}
+              editable={editable}
             />
 
             <span className="font-medium text-gray-500 text-[14px]/[20px] ml-[5px]">
@@ -75,6 +80,7 @@ export default function DishDetailsItem({
                 styles="text-gray-500 text-[14px]/[20px]"
                 text={description}
                 onChange={(val) => setDescription(val)}
+                editable={editable}
               />
             </>
           )}

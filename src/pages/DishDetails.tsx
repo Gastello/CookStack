@@ -34,6 +34,8 @@ export default function DishDetails() {
   const [img, setImg] = useState<string>("");
   const [tags, setTags] = useState<TagType[]>([]);
 
+  const [editable, setEditable] = useState(false);
+
   useEffect(() => {
     if (dish) {
       setName(dish?.name);
@@ -80,40 +82,57 @@ export default function DishDetails() {
         subtitle="Browse and manage your dish collection"
       >
         <div className="flex self-baseline gap-[20px]">
-          <div>
-            <Button
-              onClick={() => {
-                updateDish({
-                  id: dish!.id,
-                  name: name,
-                  time: time,
-                  calories: calories,
-                  isFav: dish!.isFav,
-                  description: description,
-                  img: img,
-                  tags: tags,
-                });
-              }}
-              text="Save"
-              icon={EMOJI.checkmarkTrue}
-              color="#F0FDF4"
-              textColor="#16A34A"
-            />
-          </div>
-          <div>
-            <Button
-              onClick={() => {
-                if (dish?.id) {
-                  removeDish(dish.id);
-                  navigate("/dishes");
-                }
-              }}
-              text="Delete"
-              icon={EMOJI.checkmarkFalse}
-              color="#FDF0F0"
-              textColor="#A31616"
-            />
-          </div>
+          {editable ? (
+            <>
+              <div>
+                <Button
+                  onClick={() => {
+                    updateDish({
+                      id: dish!.id,
+                      name: name,
+                      time: time,
+                      calories: calories,
+                      isFav: dish!.isFav,
+                      description: description,
+                      img: img,
+                      tags: tags,
+                    });
+                    setEditable(false);
+                  }}
+                  text="Save"
+                  icon={EMOJI.checkmarkTrue}
+                  color="#F0FDF4"
+                  textColor="#16A34A"
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    if (dish?.id) {
+                      removeDish(dish.id);
+                      navigate("/dishes");
+                    }
+                  }}
+                  text="Delete"
+                  icon={EMOJI.checkmarkFalse}
+                  color="#FDF0F0"
+                  textColor="#A31616"
+                />
+              </div>
+            </>
+          ) : (
+            <div>
+              <Button
+                onClick={() => {
+                  setEditable(true);
+                }}
+                text="Change"
+                icon={EMOJI.pencil}
+                color="#F0FDF4"
+                textColor="#16A34A"
+              />
+            </div>
+          )}
         </div>
       </DashboardHeader>
       {loading ? (
@@ -132,6 +151,7 @@ export default function DishDetails() {
           setName={setName}
           setTags={setTags}
           setTime={setTime}
+          editable={editable}
         />
       )}
     </div>

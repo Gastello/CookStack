@@ -136,7 +136,27 @@ export const useDishesStore = create<DishesState>((set, get) => ({
 
   updateDish: async (dish) => {
     set({ loading: true, error: null });
+
     try {
+      const currentDish = get().dishes.find((d) => d.id === dish.id);
+      if (currentDish) {
+        const unchanged =
+          currentDish.name === dish.name &&
+          currentDish.time === dish.time &&
+          currentDish.calories === dish.calories &&
+          currentDish.isFav === dish.isFav &&
+          currentDish.description === dish.description &&
+          currentDish.img === dish.img &&
+          JSON.stringify(currentDish.tags.map((t) => t.id).sort()) ===
+            JSON.stringify(dish.tags.map((t) => t.id).sort());
+
+        if (unchanged) {
+          set({ loading: false });
+          console.log("Dish already up to date");
+          return;
+        }
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -158,6 +178,7 @@ export const useDishesStore = create<DishesState>((set, get) => ({
           p_tag_ids: tagIds,
         }
       );
+
       if (error) throw error;
       if (!data || data.length === 0) throw new Error("Failed to update dish");
 

@@ -17,6 +17,7 @@ export const EMOJI = {
   save: "save",
   plus: "plus",
   pan: "pan",
+  pencil: "pencil",
   memo: "memo",
   manCook: "man-cook",
 };
