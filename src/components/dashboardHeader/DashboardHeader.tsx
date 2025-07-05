@@ -1,19 +1,12 @@
-import Button from "../button/Button";
-import { EMOJI } from "../emoji/Emoji";
-
 type DashboardHeaderProps = {
   title: string;
   subtitle: string;
-  btnText?: string;
-  btnIcon?: (typeof EMOJI)[keyof typeof EMOJI];
-  btnEvent?: () => void;
+  children: React.ReactNode;
 };
 export default function DashboardHeader({
   title,
   subtitle,
-  btnText,
-  btnIcon,
-  btnEvent,
+  children,
 }: DashboardHeaderProps) {
   return (
     <div className="flex justify-between">
@@ -23,17 +16,7 @@ export default function DashboardHeader({
         </div>
         <div className="text-[14px]/[24px] text-[#6B7280]">{subtitle}</div>
       </div>
-      <div>
-        {btnText && (
-          <Button
-            onClick={btnEvent}
-            text={btnText}
-            icon={btnIcon}
-            color="#F0FDF4"
-            textColor="#16A34A"
-          />
-        )}
-      </div>
+      <div>{children}</div>
     </div>
   );
 }

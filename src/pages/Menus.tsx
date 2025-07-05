@@ -1,3 +1,4 @@
+import Button from "../components/button/Button";
 import DashboardHeader from "../components/dashboardHeader/DashboardHeader";
 import { EMOJI } from "../components/emoji/Emoji";
 import EmptyDashboard from "../components/emptyDashboard/EmptyDashboard";
@@ -8,9 +9,15 @@ export default function Menus() {
       <DashboardHeader
         title="My Menus"
         subtitle="Create and manage your meal plans"
-        btnText="Create Menu"
-        btnIcon={EMOJI.memo}
-      />
+      >
+        <Button
+          text="Create Menu"
+          icon={EMOJI.memo}
+          color="#F0FDF4"
+          textColor="#16A34A"
+        />
+      </DashboardHeader>
+
       <EmptyDashboard
         emoji={EMOJI.memo}
         title="No menus yet"
