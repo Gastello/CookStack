@@ -5,6 +5,7 @@ type ChangeableTextProps = {
   text: string;
   onChange: (value: string) => void;
   digitsOnly?: boolean;
+  bordered?: boolean;
 };
 
 export default function ChangeableText({
@@ -40,7 +41,7 @@ export default function ChangeableText({
   return (
     <div
       ref={divRef}
-      className={`inline-block focus:outline-none ${styles}`}
+      className={`inline-block focus:outline-none relative ${styles}`}
       contentEditable
       suppressContentEditableWarning
       spellCheck={false}

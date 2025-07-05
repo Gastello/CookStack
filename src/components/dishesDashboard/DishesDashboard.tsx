@@ -52,7 +52,7 @@ export default function DishesDashboard() {
                 {dish.tags &&
                   dish.tags.map((tag) => {
                     return (
-                      <Tag key={tag.tag_id} color={tag.color} text={tag.text} />
+                      <Tag key={tag.id} color={tag.color} text={tag.text} />
                     );
                   })}
               </div>

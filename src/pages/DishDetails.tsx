@@ -7,11 +7,13 @@ import Error from "./Error";
 import Button from "../components/button/Button";
 import { EMOJI } from "../components/emoji/Emoji";
 import DishDetailsItem from "../components/dishDetailsItem/DishDetailsItem";
+import type { TagType } from "../store/tagsStore";
+
 // import { useTagsStore } from "../store/tagsStore";
 
 export default function DishDetails() {
   const { id } = useParams<{ id: string }>();
-  const { getDishById, fetchDishes, removeDish, loading, dishes } =
+  const { getDishById, fetchDishes, removeDish, loading, dishes, updateDish } =
     useDishesStore();
   //   const {
   //     addTag,
@@ -24,6 +26,24 @@ export default function DishDetails() {
   const [dish, setDish] = useState<DishType | undefined>(undefined);
 
   const navigate = useNavigate();
+
+  const [name, setName] = useState<string>("");
+  const [calories, setCalories] = useState<number>(0);
+  const [time, setTime] = useState<number>(0);
+  const [description, setDescription] = useState<string>("");
+  const [img, setImg] = useState<string>("");
+  const [tags, setTags] = useState<TagType[]>([]);
+
+  useEffect(() => {
+    if (dish) {
+      setName(dish?.name);
+      setCalories(dish?.calories);
+      setTime(dish?.time);
+      setDescription(dish?.description ?? "");
+      setImg(dish?.img ?? "");
+      setTags(dish?.tags);
+    }
+  }, [dish]);
 
   // Завантажуємо dishes якщо їх ще нема
   useEffect(() => {
@@ -62,6 +82,18 @@ export default function DishDetails() {
         <div className="flex self-baseline gap-[20px]">
           <div>
             <Button
+              onClick={() => {
+                updateDish({
+                  id: dish!.id,
+                  name: name,
+                  time: time,
+                  calories: calories,
+                  isFav: dish!.isFav,
+                  description: description,
+                  img: img,
+                  tags: tags,
+                });
+              }}
               text="Save"
               icon={EMOJI.checkmarkTrue}
               color="#F0FDF4"
@@ -87,7 +119,20 @@ export default function DishDetails() {
       {loading ? (
         <Loader loading={loading} name={LOADER_EMOJIES.hamburger} />
       ) : (
-        <DishDetailsItem dish={dish} />
+        <DishDetailsItem
+          name={name}
+          calories={calories}
+          time={time}
+          description={description}
+          img={img}
+          tags={tags}
+          setCalories={setCalories}
+          setDescription={setDescription}
+          setImg={setImg}
+          setName={setName}
+          setTags={setTags}
+          setTime={setTime}
+        />
       )}
     </div>
   );
