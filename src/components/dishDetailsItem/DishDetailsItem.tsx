@@ -1,7 +1,7 @@
 import Tag from "../tag/Tag";
 import type { TagType } from "../../store/tagsStore";
 import Input from "../input/Input";
-import { EMOJI } from "../emoji/Emoji";
+import Emoji, { EMOJI } from "../emoji/Emoji";
 
 type DishDetailsItemProps = {
   name: string;
@@ -72,9 +72,7 @@ export default function DishDetailsItem({
                     backgroundRepeat: "no-repeat",
                   }}
                 />
-                <div
-                  className="absolute w-full h-full text-[10px] flex items-center justify-center z-0 bg-gray-200"
-                >
+                <div className="absolute w-full h-full text-[10px] flex items-center justify-center z-0 bg-gray-200">
                   Image Preview
                 </div>
               </div>
@@ -116,23 +114,32 @@ export default function DishDetailsItem({
             </div>
           </div>
         ) : (
-          <div className="flex justify-between">
-            <div>
-              <div className="text-lg font-medium text-gray-800 mb-[5px]">
+          <div className="flex gap-2.5 justify-between">
+            <div className="grow min-w-0">
+              <div className="text-lg font-medium text-gray-800 mb-[5px] text-center">
                 {name}
               </div>
               <div className="text-gray-500 text-[14px]/[20px]">
+                <span className="mr-[10px]">
+                  <Emoji name={EMOJI.fire} size="14px" />
+                </span>
                 <span className="font-medium">Calories:</span> {calories}
               </div>
               <div className=" text-gray-500 text-[14px]/[20px]">
+                <span className="mr-[10px]">
+                  <Emoji name={EMOJI.clock} size="14px" />
+                </span>
                 <span className="font-medium">Time:</span> {time} min
               </div>
               {description && (
                 <>
-                  <div className=" text-gray-500 font-medium text-[14px]/[20px]">
+                  <div className=" text-gray-500 font-medium text-[14px]/[20px] mb-[5px]">
+                    <span className="mr-[10px]">
+                      <Emoji name={EMOJI.forkAndKnife} size="14px" />
+                    </span>
                     Description:
                   </div>
-                  <div className="text-gray-500 text-[14px]/[20px]">
+                  <div className="text-gray-500 text-[14px]/[20px] break-all">
                     {description}
                   </div>
                 </>
