@@ -39,32 +39,52 @@ export default function DishDetailsItem({
       <div className="mt-[20px] max-w-[800px] w-full rounded-2xl bg-white shadow-sm p-[20px] mx-auto">
         {editable ? (
           <div>
-            <div className="mb-2.5">
-              <Input
-                label="Dish name:"
-                height="16px"
-                placeholderEmoji={EMOJI.forkAndKnife}
-                placeholderColor="#6a7282"
-                onChange={(e) => setName(e.currentTarget.value)}
-                startValue={name}
-              />
+            <div className="flex justify-between gap-2.5 mb-[10px]">
+              <div className="grow">
+                <div className="mb-[10px]">
+                  <Input
+                    label="Dish name:"
+                    height="24px"
+                    placeholderEmoji={EMOJI.forkAndKnife}
+                    placeholderColor="#6a7282"
+                    onChange={(e) => setName(e.currentTarget.value)}
+                    startValue={name}
+                  />
+                </div>
+                <div>
+                  <Input
+                    label="Image URL:"
+                    startValue={img}
+                    height="24px"
+                    placeholderEmoji={EMOJI.clipboard}
+                    placeholderColor="#6a7282"
+                    onChange={(e) => setImg(e.currentTarget.value)}
+                  />
+                </div>
+              </div>
+              <div className="relative w-[108px] rounded-2xl overflow-hidden">
+                <div
+                  className="absolute w-full h-full z-1"
+                  style={{
+                    backgroundImage: `url(${img})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+                <div
+                  className="absolute w-full h-full text-[10px] flex items-center justify-center z-0 bg-gray-200"
+                >
+                  Image Preview
+                </div>
+              </div>
             </div>
-            <div className="mb-2.5">
-              <Input
-                label="Image URL:"
-                startValue={img}
-                height="16px"
-                placeholderEmoji={EMOJI.clipboard}
-                placeholderColor="#6a7282"
-                onChange={(e) => setImg(e.currentTarget.value)}
-              />
-            </div>
-            <div className="flex gap-2.5 mb-2.5">
+            <div className="flex gap-2.5 mb-[10px]">
               <div className="grow">
                 <Input
                   label="Calories:"
                   startValue={calories.toString()}
-                  height="16px"
+                  height="24px"
                   type="number"
                   placeholderEmoji={EMOJI.fire}
                   placeholderColor="#6a7282"
@@ -75,7 +95,7 @@ export default function DishDetailsItem({
                 <Input
                   label="Time:"
                   startValue={time.toString()}
-                  height="16px"
+                  height="24px"
                   type="number"
                   placeholderEmoji={EMOJI.clock}
                   placeholderColor="#6a7282"

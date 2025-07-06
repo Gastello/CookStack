@@ -15,6 +15,7 @@ type InputProps = {
   min?: number;
   max?: number;
   placeholderColor?: string;
+  textColor?: string;
   isTextArea?: boolean;
   startValue?: string;
 };
@@ -31,6 +32,7 @@ export default function Input({
   min,
   max,
   placeholderColor = "#CCCCCC",
+  textColor = "#374151",
   isTextArea = false,
   startValue,
 }: InputProps) {
@@ -41,7 +43,7 @@ export default function Input({
     if (startValue) setValue(startValue);
   }, [startValue]);
   const inputStyle =
-    "box-border h-[48px] px-[16px] py-[12px] rounded-2xl w-full text-[14px]/[24px] z-10 relative bg-transparent";
+    "box-border h-[48px] px-[16px] rounded-2xl w-full text-[14px] z-10 relative bg-transparent";
 
   return (
     <div>
@@ -63,7 +65,8 @@ export default function Input({
             style={{
               height: height,
               width: width,
-              color: placeholderColor,
+              color: textColor,
+              padding: "10px 16px"
             }}
             id={id}
             value={value}
@@ -82,7 +85,7 @@ export default function Input({
                 height: height,
                 width: width,
                 paddingLeft: placeholderEmoji ? "40px" : "16px",
-                color: placeholderColor,
+                color: textColor,
               }}
               id={id}
               type={type}
@@ -97,7 +100,7 @@ export default function Input({
             />
             <div
               style={{ color: placeholderColor }}
-              className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px]/[24px] z-0 bg-white rounded-2xl"
+              className="pointer-events-none absolute top-0 left-0 w-full h-full flex items-center px-[16px] text-[14px] z-0 bg-white rounded-2xl"
             >
               {placeholderEmoji && (
                 <span className="mr-[10px]">

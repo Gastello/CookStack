@@ -27,15 +27,17 @@ type EmojiProps = {
 };
 export default function Emoji({ name, size }: EmojiProps) {
   return (
-    <div
-      aria-label={name}
-      role="img"
-      className="inline-block align-middle relative top-[-2px] bg-no-repeat bg-center bg-contain"
-      style={{
-        backgroundImage: `url(/assets/emoji/${name}.png)`,
-        width: size,
-        height: size,
-      }}
-    />
+    <span className="leading-[initial]">
+      <span
+        aria-label={name}
+        role="img"
+        className="inline-block align-middle relative top-[-2px] bg-no-repeat bg-center bg-contain"
+        style={{
+          backgroundImage: `url(/assets/emoji/${name}.png)`,
+          width: size,
+          height: size,
+        }}
+      />
+    </span>
   );
 }
