@@ -2,6 +2,7 @@ import Tag from "../tag/Tag";
 import type { TagType } from "../../store/tagsStore";
 import Input from "../input/Input";
 import Emoji, { EMOJI } from "../emoji/Emoji";
+import TagsInput from "../tagsInput/TagsInput";
 
 type DishDetailsItemProps = {
   name: string;
@@ -31,7 +32,7 @@ export default function DishDetailsItem({
   setTime,
   setDescription,
   setImg,
-  // setTags,
+  setTags,
   editable = false,
 }: DishDetailsItemProps) {
   return (
@@ -101,7 +102,7 @@ export default function DishDetailsItem({
                 />
               </div>
             </div>
-            <div>
+            <div className="mb-[10px]">
               <Input
                 label="Description:"
                 startValue={description}
@@ -110,6 +111,15 @@ export default function DishDetailsItem({
                 placeholderColor="#6a7282"
                 isTextArea={true}
                 onChange={(e) => setDescription(e.currentTarget.value)}
+              />
+            </div>
+            <div>
+              <TagsInput
+                multiple
+                placeholder="Choose tags"
+                label="Choose tags:"
+                currentTags={tags}
+                setCurrentTags={setTags}
               />
             </div>
           </div>

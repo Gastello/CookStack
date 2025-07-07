@@ -1,6 +1,5 @@
 import Button from "../components/button/Button";
 import DashboardHeader from "../components/dashboardHeader/DashboardHeader";
-import Dropdown from "../components/dropdown/Dropdown";
 import { EMOJI } from "../components/emoji/Emoji";
 import EmptyDashboard from "../components/emptyDashboard/EmptyDashboard";
 import Input from "../components/input/Input";
@@ -29,12 +28,6 @@ export default function RandomMeals() {
             type="number"
             width="230px"
           />
-          <div>
-            <Dropdown
-              placeholder="Choose tags"
-              items={["Breakfast", "Lunch", "Dinner"]}
-            />
-          </div>
           <div>
             <Button
               text="Shuffle"

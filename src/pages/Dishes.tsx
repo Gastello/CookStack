@@ -37,7 +37,7 @@ export default function Dishes() {
           textColor="#16A34A"
         />
       </DashboardHeader>
-      {loading ? (
+      { loading ? (
         <Loader loading={true} size={256} name={LOADER_EMOJIES.forkAndKnife} />
       ) : dishes && dishes.length != 0 ? (
         <DishesDashboard />

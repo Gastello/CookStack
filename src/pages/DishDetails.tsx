@@ -45,7 +45,7 @@ export default function DishDetails() {
       setImg(dish?.img ?? "");
       setTags(dish?.tags);
     }
-  }, [dish]);
+  }, [dish, editable]);
 
   // Завантажуємо dishes якщо їх ще нема
   useEffect(() => {

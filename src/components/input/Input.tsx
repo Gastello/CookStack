@@ -43,7 +43,7 @@ export default function Input({
     if (startValue) setValue(startValue);
   }, [startValue]);
   const inputStyle =
-    "box-border h-[48px] px-[16px] rounded-2xl w-full text-[14px] z-10 relative bg-transparent";
+    "box-border px-[16px] rounded-2xl w-full text-[14px] z-10 relative bg-transparent";
 
   return (
     <div>
