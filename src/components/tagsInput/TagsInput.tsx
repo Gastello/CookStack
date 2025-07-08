@@ -76,6 +76,7 @@ export default function TagsInput({
           tagInput.current?.focus();
         }}
       >
+        {/* Used Tags: */}
         <div className="flex gap-[5px] items-center flex-wrap grow">
           {currentTags.map((x) => (
             <div
@@ -95,8 +96,9 @@ export default function TagsInput({
           ))}
           <input
             ref={tagInput}
-            className="grow-1 focus:outline-0 self-stretch"
+            className="flex-grow w-[30px] min-w-[30px] focus:outline-0 self-stretch"
             id={id}
+            value={inputValue}
             onChange={(e) => setInputValue(e.currentTarget.value.trim())}
             onKeyDown={async (e) => {
               if (e.key == "Enter" && inputValue !== "") {
@@ -120,7 +122,7 @@ export default function TagsInput({
           <ColorSlider value={color} setValue={setColor} />
         </div>
       </div>
-
+      {/* All Tags */}
       {isOpen && (
         <div
           style={{ width: "100%" }}
@@ -137,7 +139,7 @@ export default function TagsInput({
                     ...currentTags,
                     { id: item.id, color: item.color, text: item.text },
                   ]);
-                linkTagsToDish(dishId, [item.id]);
+                // linkTagsToDish(dishId, [item.id]);
               }}
             >
               <Tag color={item.color} text={item.text} />
