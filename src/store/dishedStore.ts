@@ -84,7 +84,9 @@ export const useDishesStore = create<DishesState>((set, get) => ({
       if (error) throw error;
       if (!data) throw new Error("No dishes returned");
 
-      const dishes: DishType[] = mapRPCDishesToDishType(data);
+      const dishes: DishType[] = mapRPCDishesToDishType(data).sort(
+        (a, b) => Number(b.isFav) - Number(a.isFav)
+      );
 
       set({ dishes, loading: false });
     } catch (err) {

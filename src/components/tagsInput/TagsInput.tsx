@@ -109,11 +109,8 @@ export default function TagsInput({
                 if (result.success) {
                   setInputValue("");
                   setIsOpen(false);
-                  console.log("Tag added, id:", result.data);
                   linkTagsToDish(dishId, [result.data.toString()]);
-                } else {
-                  console.error("Failed to add tag:", result.data.toString);
-                }
+                } 
               }
             }}
           />
