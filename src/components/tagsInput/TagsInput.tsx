@@ -24,25 +24,35 @@ export default function TagsInput({
   const { tags, fetchTags } = useTagsStore();
 
   const tagInput = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetchTags();
   }, [fetchTags]);
 
   const [inputValue, setInputValue] = useState("");
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedItems, setSelectedItems] = useState(
-    currentTags.map((x) => ({ ...x, isSelected: true }))
-  );
-
   const { addTag, linkTagsToDish } = useTagsStore();
-
-  useEffect(() => {
-    console.log(selectedItems);
-  }, [selectedItems]);
-
+  const [isOpen, setIsOpen] = useState(false);
   const id = useId();
 
+  const [tagsSearch, setTagsSearch] = useState<TagType[]>([]);
+
+  useEffect(() => {
+    if (inputValue.length == 0) setIsOpen(false);
+    else {
+      const filteredTags = tags.filter((item) => {
+        const matchesSearch = item.text
+          .toLocaleLowerCase()
+          .includes(inputValue.toLocaleLowerCase());
+
+        const isNotInCurrent = !currentTags.some((tag) => tag.id === item.id);
+
+        return matchesSearch && isNotInCurrent;
+      });
+      setTagsSearch(filteredTags);
+      setIsOpen(filteredTags.length > 0);
+    }
+  }, [inputValue, tags]);
   return (
     <div
       className={`text-[14px]/[24px] text-[#1F2937] cursor-pointer select-none relative`}
@@ -56,13 +66,14 @@ export default function TagsInput({
         </label>
       )}
       <div
-        style={{ width: "100%", minHeight: "40px" }}
-        className={`px-[16px] bg-white border border-[#E5E7EB] py-[4px] flex items-center ${
-          isOpen ? "rounded-t-2xl border-b-0" : "rounded-2xl"
-        }`}
+        style={{
+          width: "100%",
+          minHeight: "40px",
+          borderRadius: isOpen ? "16px 16px 0px 0px" : "16px 16px 16px 16px",
+        }}
+        className="px-[16px] bg-white border border-[#E5E7EB] py-[4px] flex items-center"
         onClick={() => {
           tagInput.current?.focus();
-          // setIsOpen((prev) => !prev);
         }}
       >
         <div className="flex gap-[5px] items-center flex-wrap grow">
@@ -71,7 +82,6 @@ export default function TagsInput({
               className="flex items-center gap-[5px] group cursor-default"
               key={x.id}
             >
-              <Tag text={x.text} color={x.color} />
               <span
                 className="hidden group-hover:inline-block hover:cursor-pointer"
                 onClick={() => {
@@ -80,13 +90,14 @@ export default function TagsInput({
               >
                 <Emoji name={EMOJI.checkmarkFalse} size="14px" />
               </span>
+              <Tag text={x.text} color={x.color} />
             </div>
           ))}
           <input
             ref={tagInput}
             className="grow-1 focus:outline-0 self-stretch"
             id={id}
-            onChange={(e) => setInputValue(e.currentTarget.value)}
+            onChange={(e) => setInputValue(e.currentTarget.value.trim())}
             onKeyDown={async (e) => {
               if (e.key == "Enter" && inputValue !== "") {
                 const result = await addTag(
@@ -94,6 +105,8 @@ export default function TagsInput({
                   getColorAtPosition(color)
                 );
                 if (result.success) {
+                  setInputValue("");
+                  setIsOpen(false);
                   console.log("Tag added, id:", result.data);
                   linkTagsToDish(dishId, [result.data.toString()]);
                 } else {
@@ -111,32 +124,24 @@ export default function TagsInput({
       {isOpen && (
         <div
           style={{ width: "100%" }}
-          className="border border-t-0 border-[#E5E7EB] absolute bottom-0 left-0 translate-y-full rounded-b-2xl bg-white  overflow-hidden"
+          className="border border-t-0 border-[#E5E7EB] absolute bottom-0 left-0 translate-y-full rounded-b-2xl bg-white  overflow-hidden flex flex-wrap gap-[5px] px-[16px] py-[4px]"
         >
-          {selectedItems.map((item) => (
-            <div
-              className="py-[4px] px-[16px] border-t border-[#E5E7EB] cursor-pointer hover:bg-[#E5E7EB]"
+          {tagsSearch.map((item) => (
+            <span
               key={item.id}
-              onClick={() =>
-                setSelectedItems((prev) => {
-                  const res = prev.map((el) =>
-                    el.id === item.id
-                      ? { ...el, isSelected: !el.isSelected }
-                      : el
-                  );
-                  return res;
-                })
-              }
+              onClick={() => {
+                setInputValue("");
+                const filtredTags = currentTags.filter((x) => x.id == item.id);
+                if (!filtredTags.length)
+                  setCurrentTags([
+                    ...currentTags,
+                    { id: item.id, color: item.color, text: item.text },
+                  ]);
+                linkTagsToDish(dishId, [item.id]);
+              }}
             >
-              <span className="mr-[10px]">
-                {item.isSelected ? (
-                  <Emoji name={EMOJI.checkmarkTrue} size="14px" />
-                ) : (
-                  <Emoji name={EMOJI.checkmarkFalse} size="14px" />
-                )}
-              </span>
-              <span>{item.text}</span>
-            </div>
+              <Tag color={item.color} text={item.text} />
+            </span>
           ))}
         </div>
       )}
