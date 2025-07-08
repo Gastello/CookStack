@@ -151,21 +151,24 @@ export default function DishDetails() {
       {loading ? (
         <Loader loading={loading} name={LOADER_EMOJIES.hamburger} />
       ) : (
-        <DishDetailsItem
-          name={name}
-          calories={calories}
-          time={time}
-          description={description}
-          img={img}
-          tags={tags}
-          setCalories={setCalories}
-          setDescription={setDescription}
-          setImg={setImg}
-          setName={setName}
-          setTags={setTags}
-          setTime={setTime}
-          editable={editable}
-        />
+        dish?.id && (
+          <DishDetailsItem
+            id={dish.id}
+            name={name}
+            calories={calories}
+            time={time}
+            description={description}
+            img={img}
+            tags={tags}
+            setCalories={setCalories}
+            setDescription={setDescription}
+            setImg={setImg}
+            setName={setName}
+            setTags={setTags}
+            setTime={setTime}
+            editable={editable}
+          />
+        )
       )}
     </div>
   );

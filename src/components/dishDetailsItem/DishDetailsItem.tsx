@@ -3,8 +3,10 @@ import type { TagType } from "../../store/tagsStore";
 import Input from "../input/Input";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import TagsInput from "../tagsInput/TagsInput";
+import { useState } from "react";
 
 type DishDetailsItemProps = {
+  id: string;
   name: string;
   calories: number;
   time: number;
@@ -21,6 +23,7 @@ type DishDetailsItemProps = {
 };
 
 export default function DishDetailsItem({
+  id,
   name,
   calories,
   time,
@@ -35,6 +38,7 @@ export default function DishDetailsItem({
   setTags,
   editable = false,
 }: DishDetailsItemProps) {
+  const [color, setColor] = useState(0.5);
   return (
     <div className="relative flex flex-col h-full p-[30px]">
       <div className="mt-[20px] max-w-[800px] w-full rounded-2xl bg-white shadow-sm p-[20px] mx-auto">
@@ -115,11 +119,12 @@ export default function DishDetailsItem({
             </div>
             <div>
               <TagsInput
-                multiple
-                placeholder="Choose tags"
                 label="Choose tags:"
                 currentTags={tags}
                 setCurrentTags={setTags}
+                color={color}
+                setColor={setColor}
+                dishId={id}
               />
             </div>
           </div>

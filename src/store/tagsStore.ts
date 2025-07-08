@@ -29,7 +29,10 @@ type TagsState = {
   loading: boolean;
   error: string | null;
   fetchTags: () => Promise<void>;
-  addTag: (text: string, color: string) => Promise<void>;
+  addTag: (
+    text: string,
+    color: string
+  ) => Promise<{ success: boolean; data: string | number }>;
   removeTag: (id: string) => Promise<void>;
   updateTag: (tag: TagType) => Promise<void>;
   getTagById: (id: string) => TagType | undefined;
@@ -67,12 +70,16 @@ export const useTagsStore = create<TagsState>((set, get) => ({
     }
   },
 
-  addTag: async (text, color) => {
+  addTag: async (
+    text: string,
+    color: string
+  ): Promise<{ success: boolean; data: string | number }> => {
     set({ loading: true, error: null });
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       if (!user) throw new Error("User not authenticated");
 
       const { data, error } = await supabase.rpc("create_tag", {
@@ -82,6 +89,7 @@ export const useTagsStore = create<TagsState>((set, get) => ({
       });
 
       if (error) throw error;
+
       if (!data || !Array.isArray(data) || data.length === 0) {
         throw new Error("Empty response from create_tag");
       }
@@ -99,11 +107,18 @@ export const useTagsStore = create<TagsState>((set, get) => ({
         tags: [...state.tags, newTag],
         loading: false,
       }));
+
+      // Повертаємо успіх і id створеного тега
+      return { success: true, data: newTag.id };
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
       set({
-        error: err instanceof Error ? err.message : String(err),
+        error: errorMessage,
         loading: false,
       });
+
+      // Повертаємо провал і текст помилки
+      return { success: false, data: errorMessage };
     }
   },
 

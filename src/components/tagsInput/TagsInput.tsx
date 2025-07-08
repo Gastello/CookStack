@@ -2,20 +2,24 @@ import { useEffect, useId, useRef, useState } from "react";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import { useTagsStore, type TagType } from "../../store/tagsStore";
 import Tag from "../tag/Tag";
+import ColorSlider, { getColorAtPosition } from "../colorSlider/ColorSlider";
 
 type TagsInputProps = {
-  placeholder?: string;
-  multiple?: boolean;
-  width?: string;
   label?: string;
   currentTags: TagType[] | undefined;
   setCurrentTags: (tags: TagType[]) => void;
+  color: number;
+  setColor: (color: number) => void;
+  dishId: string;
 };
 
 export default function TagsInput({
   label,
   currentTags = [],
   setCurrentTags,
+  color,
+  setColor,
+  dishId,
 }: TagsInputProps) {
   const { tags, fetchTags } = useTagsStore();
 
@@ -24,14 +28,21 @@ export default function TagsInput({
     fetchTags();
   }, [fetchTags]);
 
+  const [inputValue, setInputValue] = useState("");
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState(
     currentTags.map((x) => ({ ...x, isSelected: true }))
   );
+
+  const { addTag, linkTagsToDish } = useTagsStore();
+
   useEffect(() => {
     console.log(selectedItems);
   }, [selectedItems]);
+
   const id = useId();
+
   return (
     <div
       className={`text-[14px]/[24px] text-[#1F2937] cursor-pointer select-none relative`}
@@ -46,7 +57,7 @@ export default function TagsInput({
       )}
       <div
         style={{ width: "100%", minHeight: "40px" }}
-        className={`px-[16px] bg-white border border-[#E5E7EB] py-[4px] flex gap-[5px] items-center flex-wrap ${
+        className={`px-[16px] bg-white border border-[#E5E7EB] py-[4px] flex items-center ${
           isOpen ? "rounded-t-2xl border-b-0" : "rounded-2xl"
         }`}
         onClick={() => {
@@ -54,27 +65,47 @@ export default function TagsInput({
           // setIsOpen((prev) => !prev);
         }}
       >
-        {currentTags.map((x) => (
-          <div
-            className="flex items-center gap-[5px] group cursor-default"
-            key={x.id}
-          >
-            <Tag text={x.text} color={x.color} />
-            <span
-              className="hidden group-hover:inline-block hover:cursor-pointer"
-              onClick={() => {
-                setCurrentTags(currentTags.filter((item) => x.id != item.id));
-              }}
+        <div className="flex gap-[5px] items-center flex-wrap grow">
+          {currentTags.map((x) => (
+            <div
+              className="flex items-center gap-[5px] group cursor-default"
+              key={x.id}
             >
-              <Emoji name={EMOJI.checkmarkFalse} size="14px" />
-            </span>
-          </div>
-        ))}
-        <input
-          ref={tagInput}
-          className="grow-1 focus:outline-0 self-stretch"
-          id={id}
-        ></input>
+              <Tag text={x.text} color={x.color} />
+              <span
+                className="hidden group-hover:inline-block hover:cursor-pointer"
+                onClick={() => {
+                  setCurrentTags(currentTags.filter((item) => x.id != item.id));
+                }}
+              >
+                <Emoji name={EMOJI.checkmarkFalse} size="14px" />
+              </span>
+            </div>
+          ))}
+          <input
+            ref={tagInput}
+            className="grow-1 focus:outline-0 self-stretch"
+            id={id}
+            onChange={(e) => setInputValue(e.currentTarget.value)}
+            onKeyDown={async (e) => {
+              if (e.key == "Enter" && inputValue !== "") {
+                const result = await addTag(
+                  inputValue,
+                  getColorAtPosition(color)
+                );
+                if (result.success) {
+                  console.log("Tag added, id:", result.data);
+                  linkTagsToDish(dishId, [result.data.toString()]);
+                } else {
+                  console.error("Failed to add tag:", result.data.toString);
+                }
+              }
+            }}
+          />
+        </div>
+        <div className="shrink-0">
+          <ColorSlider value={color} setValue={setColor} />
+        </div>
       </div>
 
       {isOpen && (
