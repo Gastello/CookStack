@@ -65,7 +65,19 @@ function mapRPCDishesToDishType(
   }));
 }
 
-export const useDishesStore = create<DishesState>((set, get) => ({
+type FilterState = {
+  filter: {
+    search: string;
+    time: number | null;
+    calories: number | null;
+    sortBy: "name" | "time" | "calories";
+    sortOrder: "asc" | "desc";
+  };
+  setFilter: (newFilter: Partial<FilterState["filter"]>) => void;
+  getFiltredDishes: () => DishType[];
+};
+
+export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
   dishes: [],
   loading: false,
   error: null,
@@ -292,6 +304,59 @@ export const useDishesStore = create<DishesState>((set, get) => ({
   getDishById: (id) => {
     const { dishes } = get();
     return dishes.find((d) => d.id === id);
+  },
+
+  filter: {
+    search: "",
+    time: null,
+    calories: null,
+    sortBy: "name",
+    sortOrder: "asc",
+  },
+
+  setFilter: (newFilter) => {
+    set((state) => ({
+      filter: { ...state.filter, ...newFilter },
+    }));
+  },
+
+  getFiltredDishes: () => {
+    const { dishes, filter } = get();
+    let result = [...dishes];
+
+    const { search, time, calories, sortBy, sortOrder } = filter;
+
+    // search
+    if (search.trim() !== "") {
+      result = result.filter((d) =>
+        d.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // time
+    if (time != null) {
+      result = result.filter((d) => d.time <= time);
+    }
+
+    // calories
+    if (calories != null) {
+      result = result.filter((d) => d.calories <= calories);
+    }
+
+    // sort
+    result.sort((a, b) => {
+      const valueA = a[sortBy];
+      const valueB = b[sortBy];
+
+      if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+      if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    // isFav виводити перші
+    result.sort((a, b) => Number(b.isFav) - Number(a.isFav));
+
+    return result;
   },
 }));
 

@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { useDishesStore } from "../../store/dishedStore";
+import { useDishesStore, type DishType } from "../../store/dishedStore";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import Tag from "../tag/Tag";
+import { useEffect, useState } from "react";
 
 export default function DishesDashboard() {
   const dishes = useDishesStore((s) => s.dishes);
@@ -16,9 +17,18 @@ export default function DishesDashboard() {
 
   const cols = Math.min(dishes.length, 4);
 
+  const getFiltredDishes = useDishesStore((s) => s.getFiltredDishes);
+  const filter = useDishesStore((s) => s.filter);
+
+  const [filtredDishes, setFiltredDishes] = useState<DishType[]>([]);
+
+  useEffect(() => {
+    setFiltredDishes(getFiltredDishes());
+  }, [dishes, filter]);
+
   return (
     <div className={`mt-[20px] grid ${colsClass[cols - 1]} gap-[20px]`}>
-      {dishes.map((dish) => {
+      {filtredDishes.map((dish) => {
         return (
           <div
             key={dish.id}

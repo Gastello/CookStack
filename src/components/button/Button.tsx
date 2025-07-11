@@ -13,7 +13,7 @@ type ButtonPropsBaseProps = {
   isBordered?: boolean;
   paddingX?: string;
   paddingY?: string;
-  sortIco?: "ascending" | "descending";
+  sortIco?: "asc" | "desc";
 };
 
 type ButtonProps =
@@ -76,6 +76,7 @@ export default function Button({
               backgroundImage: `url(/assets/icons/arrow.svg)`,
               width: "14px",
               height: "14px",
+              rotate: sortIco == "asc" ? "180deg" : "0deg",
             }}
           />
         </span>
