@@ -23,6 +23,7 @@ export const ANIMATED_EMOJI = {
   clapperBoard: "Clapper Board",
   fileFolder: "File Folder",
   pencil: "Pencil",
+  abacus: "Abacus",
 };
 type AnimatedEmojiBaseProps = {
   name: (typeof ANIMATED_EMOJI)[keyof typeof ANIMATED_EMOJI];

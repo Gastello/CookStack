@@ -9,6 +9,7 @@ type ButtonPropsBaseProps = {
   color?: string;
   textColor?: string;
   isDisabled?: boolean;
+  textSize?: string;
 };
 
 type ButtonProps =
@@ -29,6 +30,7 @@ export default function Button({
   icon,
   animIcon,
   isDisabled = false,
+  textSize,
 }: ButtonProps) {
   return (
     <button
@@ -38,17 +40,18 @@ export default function Button({
         color: textColor,
         opacity: isDisabled ? "0.5" : "1",
         cursor: isDisabled ? "default" : "pointer",
+        fontSize: textSize ? textSize : "14px",
       }}
       className="px-[16px] py-[12px] text-[14px]/[24px] rounded-xl w-full"
       onClick={onClick}
     >
       {icon && (
-        <span className="mr-[10px]">
-          <Emoji name={icon} size="14px" />
+        <span style={{ marginRight: text ? "10px" : "0px" }}>
+          <Emoji name={icon} size={textSize ? textSize : "14px"} />
         </span>
       )}
       {animIcon && (
-        <span className="mr-[10px]">
+        <span style={{ marginRight: text ? "10px" : "0px" }}>
           <AnimatedEmoji isPlaying={false} name={animIcon} size="20px" />
         </span>
       )}

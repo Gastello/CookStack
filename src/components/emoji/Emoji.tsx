@@ -19,6 +19,7 @@ export const EMOJI = {
   pan: "pan",
   pencil: "pencil",
   memo: "memo",
+  abacus: "abacus",
   manCook: "man-cook",
 };
 type EmojiProps = {

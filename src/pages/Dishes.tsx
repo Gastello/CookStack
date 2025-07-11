@@ -29,15 +29,30 @@ export default function Dishes() {
         title="My Dishes"
         subtitle="Browse and manage your dish collection"
       >
-        <Button
-          onClick={addDish}
-          text="Add Dish"
-          icon={EMOJI.forkAndKnife}
-          color="#F0FDF4"
-          textColor="#16A34A"
-        />
+        <div className="flex gap-[10px]">
+          {dishes && dishes.length != 0 && (
+            <div className="relative">
+              <Button
+                icon={EMOJI.abacus}
+                textSize="18px"
+                text=""
+                color="#F0FDF4"
+              />
+              <div className="absolute bottom-0 right-0  px-[16px] py-[12px] bg-white rounded-xl transform translate-y-full">asd</div>
+            </div>
+          )}
+          <div className="shrink-0">
+            <Button
+              onClick={addDish}
+              text="Add Dish"
+              icon={EMOJI.forkAndKnife}
+              color="#F0FDF4"
+              textColor="#16A34A"
+            />
+          </div>
+        </div>
       </DashboardHeader>
-      { loading ? (
+      {loading ? (
         <Loader loading={true} size={256} name={LOADER_EMOJIES.forkAndKnife} />
       ) : dishes && dishes.length != 0 ? (
         <DishesDashboard />
