@@ -1,5 +1,5 @@
 import Tag from "../tag/Tag";
-import type { TagType } from "../../store/tagsStore";
+import { type TagType } from "../../store/tagsStore";
 import Input from "../input/Input";
 import Emoji, { EMOJI } from "../emoji/Emoji";
 import TagsInput from "../tagsInput/TagsInput";

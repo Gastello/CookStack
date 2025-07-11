@@ -7,24 +7,14 @@ import Error from "./Error";
 import Button from "../components/button/Button";
 import { EMOJI } from "../components/emoji/Emoji";
 import DishDetailsItem from "../components/dishDetailsItem/DishDetailsItem";
-import type { TagType } from "../store/tagsStore";
-
-// import { useTagsStore } from "../store/tagsStore";
+import { useTagsStore, type TagType } from "../store/tagsStore";
 
 export default function DishDetails() {
   const { id } = useParams<{ id: string }>();
   const { getDishById, fetchDishes, removeDish, loading, dishes, updateDish } =
     useDishesStore();
-  //   const {
-  //     addTag,
-  //     error,
-  //     loading: tagsLoading,
-  //     removeTag,
-  //     fetchTags,
-  //     updateTag,
-  //   } = useTagsStore();
+  const { deleteUnusedTags } = useTagsStore();
   const [dish, setDish] = useState<DishType | undefined>(undefined);
-
   const navigate = useNavigate();
 
   const [name, setName] = useState<string>("");
@@ -97,6 +87,7 @@ export default function DishDetails() {
                       img: img,
                       tags: tags,
                     });
+                    deleteUnusedTags();
                     setEditable(false);
                   }}
                   text="Save"

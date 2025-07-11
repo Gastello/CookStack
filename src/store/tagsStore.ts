@@ -37,6 +37,7 @@ type TagsState = {
   updateTag: (tag: TagType) => Promise<void>;
   getTagById: (id: string) => TagType | undefined;
   linkTagsToDish: (dishId: string, tagIds: string[]) => Promise<void>;
+  deleteUnusedTags: () => Promise<void>;
 };
 
 export const useTagsStore = create<TagsState>((set, get) => ({
@@ -137,6 +138,7 @@ export const useTagsStore = create<TagsState>((set, get) => ({
         tags: state.tags.filter((tag) => tag.id !== id),
         loading: false,
       }));
+      await get().deleteUnusedTags();
     } catch (err) {
       set({
         error: err instanceof Error ? err.message : String(err),
@@ -225,5 +227,28 @@ export const useTagsStore = create<TagsState>((set, get) => ({
     }
 
     console.log("✅ Tags updated in local state.");
+  },
+  deleteUnusedTags: async () => {
+    set({ loading: true, error: null });
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase.rpc("delete_unused_tags", {
+        p_user_id: user.id,
+      });
+
+      if (error) throw error;
+
+      console.log(`✅ Deleted ${data} unused tags`);
+      await get().fetchTags(); // оновити локальний список
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : String(err),
+        loading: false,
+      });
+    }
   },
 }));
