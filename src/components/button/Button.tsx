@@ -10,6 +10,10 @@ type ButtonPropsBaseProps = {
   textColor?: string;
   isDisabled?: boolean;
   textSize?: string;
+  isBordered?: boolean;
+  paddingX?: string;
+  paddingY?: string;
+  sortIco?: "ascending" | "descending";
 };
 
 type ButtonProps =
@@ -31,6 +35,10 @@ export default function Button({
   animIcon,
   isDisabled = false,
   textSize,
+  isBordered,
+  paddingX = "16px",
+  paddingY = "12px",
+  sortIco,
 }: ButtonProps) {
   return (
     <button
@@ -41,8 +49,10 @@ export default function Button({
         opacity: isDisabled ? "0.5" : "1",
         cursor: isDisabled ? "default" : "pointer",
         fontSize: textSize ? textSize : "14px",
+        border: isBordered ? `1px solid #E5E7EB` : "",
+        padding: `${paddingY} ${paddingX}`,
       }}
-      className="px-[16px] py-[12px] text-[14px]/[24px] rounded-xl w-full"
+      className="text-[14px]/[24px] rounded-xl w-full"
       onClick={onClick}
     >
       {icon && (
@@ -56,6 +66,20 @@ export default function Button({
         </span>
       )}
       {text}
+      {sortIco && (
+        <span className="leading-[initial] ml-[5px]">
+          <span
+            aria-label="arrow"
+            role="img"
+            className="inline-block align-middle relative top-[-2px] bg-no-repeat bg-center bg-contain"
+            style={{
+              backgroundImage: `url(/assets/icons/arrow.svg)`,
+              width: "14px",
+              height: "14px",
+            }}
+          />
+        </span>
+      )}
     </button>
   );
 }
