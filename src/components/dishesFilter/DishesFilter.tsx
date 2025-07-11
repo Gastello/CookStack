@@ -45,10 +45,16 @@ export default function DishesFilter({
             height="20px"
             textSize="12px"
             startValue={name}
-            onChange={(e) => setName(e.currentTarget.value)}
+            onChange={(e) => {
+              const val = e.currentTarget.value;
+              setName(val);
+              setFilter({
+                search: val,
+              });
+            }}
           />
           <Input
-            placeholder="Cooking time"
+            placeholder="Max time"
             isBordered={true}
             placeholderEmoji={EMOJI.clock}
             type="number"
@@ -56,10 +62,16 @@ export default function DishesFilter({
             height="20px"
             textSize="12px"
             startValue={time}
-            onChange={(e) => setTime(e.currentTarget.value)}
+            onChange={(e) => {
+              const val = e.currentTarget.value;
+              setTime(val);
+              setFilter({
+                time: Number(val),
+              });
+            }}
           />
           <Input
-            placeholder="Calories"
+            placeholder="Max calories"
             isBordered={true}
             placeholderEmoji={EMOJI.fire}
             type="number"
@@ -67,7 +79,13 @@ export default function DishesFilter({
             height="20px"
             textSize="12px"
             startValue={calories}
-            onChange={(e) => setCalories(e.currentTarget.value)}
+            onChange={(e) => {
+              const val = e.currentTarget.value;
+              setCalories(val);
+              setFilter({
+                calories: Number(val),
+              });
+            }}
           />
           <div className="text-center">Sort</div>
           <div className="flex flex-col gap-[5px] mb-[10px]">
@@ -88,7 +106,6 @@ export default function DishesFilter({
                     sortOrder: sortOrderName,
                   });
                   setSortOrderName(sortOrderName == "asc" ? "desc" : "asc");
-                  console.log(sortOrderName);
                 }}
               />
             </div>

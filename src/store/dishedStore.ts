@@ -67,9 +67,9 @@ function mapRPCDishesToDishType(
 
 type FilterState = {
   filter: {
-    search: string;
-    time: number | null;
-    calories: number | null;
+    search?: string;
+    time?: number | null;
+    calories?: number | null;
     sortBy: "name" | "time" | "calories";
     sortOrder: "asc" | "desc";
   };
@@ -315,9 +315,25 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
   },
 
   setFilter: (newFilter) => {
-    set((state) => ({
-      filter: { ...state.filter, ...newFilter },
-    }));
+    set((state) => {
+      const merged = { ...state.filter, ...newFilter };
+
+      // Автоматично очищаємо пусті значення
+      if (merged.search?.trim() === "") delete merged.search;
+      if (
+        merged.time === 0 ||
+        (typeof merged.time === "number" && isNaN(merged.time))
+      )
+        delete merged.time;
+
+      if (
+        merged.calories === 0 ||
+        (typeof merged.calories === "number" && isNaN(merged.calories))
+      )
+        delete merged.calories;
+
+      return { filter: merged };
+    });
   },
 
   getFiltredDishes: () => {
@@ -327,7 +343,7 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
     const { search, time, calories, sortBy, sortOrder } = filter;
 
     // search
-    if (search.trim() !== "") {
+    if (search && search.trim() !== "") {
       result = result.filter((d) =>
         d.name.toLowerCase().includes(search.toLowerCase())
       );
