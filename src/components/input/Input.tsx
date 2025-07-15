@@ -61,8 +61,8 @@ export default function Input({
         {isTextArea ? (
           <textarea
             onChange={(e) => {
-              onChange(e);
               setValue(e.target.value);
+              onChange(e);
             }}
             style={{
               height: height,
@@ -81,8 +81,8 @@ export default function Input({
           <>
             <input
               onChange={(e) => {
-                onChange(e);
                 setValue(e.target.value);
+                onChange(e);
               }}
               style={{
                 height: height,

@@ -11,8 +11,14 @@ import { useTagsStore, type TagType } from "../store/tagsStore";
 
 export default function DishDetails() {
   const { id } = useParams<{ id: string }>();
-  const { getDishById, fetchDishes, removeDish, loading, dishes, updateDish } =
-    useDishesStore();
+
+  const getDishById = useDishesStore((s) => s.getDishById);
+  const fetchDishes = useDishesStore((s) => s.fetchDishes);
+  const removeDish = useDishesStore((s) => s.removeDish);
+  const loading = useDishesStore((s) => s.loading);
+  const dishes = useDishesStore((s) => s.dishes);
+  const updateDish = useDishesStore((s) => s.updateDish);
+
   const { deleteUnusedTags } = useTagsStore();
   const [dish, setDish] = useState<DishType | undefined>(undefined);
   const navigate = useNavigate();
@@ -76,8 +82,8 @@ export default function DishDetails() {
             <>
               <div>
                 <Button
-                  onClick={() => {
-                    updateDish({
+                  onClick={async () => {
+                    await updateDish({
                       id: dish!.id,
                       name: name,
                       time: time,
@@ -123,9 +129,10 @@ export default function DishDetails() {
               </div>
               <div>
                 <Button
-                  onClick={() => {
+                  onClick={async () => {
                     if (dish?.id) {
-                      removeDish(dish.id);
+                      await removeDish(dish.id);
+                      deleteUnusedTags();
                       navigate("/dishes");
                     }
                   }}
@@ -144,20 +151,9 @@ export default function DishDetails() {
       ) : (
         dish?.id && (
           <DishDetailsItem
-            id={dish.id}
-            name={name}
-            calories={calories}
-            time={time}
-            description={description}
-            img={img}
-            tags={tags}
-            setCalories={setCalories}
-            setDescription={setDescription}
-            setImg={setImg}
-            setName={setName}
-            setTags={setTags}
-            setTime={setTime}
             editable={editable}
+            dish={{id: dish.id, name, calories, time, description, img, tags}}
+            setters={{setCalories, setDescription, setImg, setName, setTags, setTime}}
           />
         )
       )}
