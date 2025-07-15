@@ -10,7 +10,6 @@ type TagsInputProps = {
   setCurrentTags: (tags: TagType[]) => void;
   color: number;
   setColor: (color: number) => void;
-  dishId: string;
 };
 
 export default function TagsInput({
@@ -19,7 +18,6 @@ export default function TagsInput({
   setCurrentTags,
   color,
   setColor,
-  dishId,
 }: TagsInputProps) {
   const { tags, fetchTags } = useTagsStore();
 
@@ -31,7 +29,7 @@ export default function TagsInput({
 
   const [inputValue, setInputValue] = useState("");
 
-  const { addTag, linkTagsToDish } = useTagsStore();
+  const { addTag } = useTagsStore();
   const [isOpen, setIsOpen] = useState(false);
   const id = useId();
 
@@ -109,8 +107,24 @@ export default function TagsInput({
                 if (result.success) {
                   setInputValue("");
                   setIsOpen(false);
-                  linkTagsToDish(dishId, [result.data.toString()]);
-                } 
+                  // Додаємо новий тег у локальний currentTags
+                  const newTag = tags.find(
+                    (t) => t.id === result.data.toString()
+                  );
+                  if (newTag) {
+                    setCurrentTags([...currentTags, newTag]);
+                  } else {
+                    // Якщо тег ще не встиг зʼявитись у tags, додаємо вручну
+                    setCurrentTags([
+                      ...currentTags,
+                      {
+                        id: result.data.toString(),
+                        text: inputValue,
+                        color: getColorAtPosition(color),
+                      },
+                    ]);
+                  }
+                }
               }
             }}
           />

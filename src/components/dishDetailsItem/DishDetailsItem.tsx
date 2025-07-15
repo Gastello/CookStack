@@ -123,7 +123,6 @@ export default function DishDetailsItem({
                 setCurrentTags={setters.setTags}
                 color={color}
                 setColor={setColor}
-                dishId={dish.id}
               />
             </div>
           </div>
@@ -159,33 +158,35 @@ export default function DishDetailsItem({
                 </>
               )}
             </div>
-            <div>
-              {dish.img && (
-                <div className="mb-[10px]">
-                  <div
-                    style={{
-                      backgroundImage: `url(${dish.img})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      backgroundRepeat: "no-repeat",
-                    }}
-                    className="w-[256px] h-[256px] rounded-lg "
-                  ></div>
+            {(dish.img || (dish.tags?.length ?? 0) > 0) && (
+              <div className="grow-0 basis-[256px]">
+                {dish.img && (
+                  <div className="mb-[10px]">
+                    <div
+                      style={{
+                        backgroundImage: `url(${dish.img})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                      className="w-[256px] h-[256px] rounded-lg "
+                    ></div>
+                  </div>
+                )}
+                <div className="flex gap-[5px] justify-end flex-wrap">
+                  {dish.tags &&
+                    dish.tags.map((tag) => {
+                      return (
+                        <Tag
+                          key={`${tag.text}_${tag.color}`}
+                          color={tag.color}
+                          text={tag.text}
+                        />
+                      );
+                    })}
                 </div>
-              )}
-              <div className="flex gap-[5px] flex-wrap">
-                {dish.tags &&
-                  dish.tags.map((tag) => {
-                    return (
-                      <Tag
-                        key={`${tag.text}_${tag.color}`}
-                        color={tag.color}
-                        text={tag.text}
-                      />
-                    );
-                  })}
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

@@ -20,6 +20,7 @@ export default function DishDetails() {
   const updateDish = useDishesStore((s) => s.updateDish);
 
   const { deleteUnusedTags } = useTagsStore();
+
   const [dish, setDish] = useState<DishType | undefined>(undefined);
   const navigate = useNavigate();
 
@@ -105,6 +106,7 @@ export default function DishDetails() {
               <div>
                 <Button
                   onClick={() => {
+                    deleteUnusedTags();
                     setEditable(false);
                   }}
                   text="Discard"
@@ -152,8 +154,15 @@ export default function DishDetails() {
         dish?.id && (
           <DishDetailsItem
             editable={editable}
-            dish={{id: dish.id, name, calories, time, description, img, tags}}
-            setters={{setCalories, setDescription, setImg, setName, setTags, setTime}}
+            dish={{ id: dish.id, name, calories, time, description, img, tags }}
+            setters={{
+              setCalories,
+              setDescription,
+              setImg,
+              setName,
+              setTags,
+              setTime,
+            }}
           />
         )
       )}
