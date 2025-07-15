@@ -236,13 +236,12 @@ export const useTagsStore = create<TagsState>((set, get) => ({
       } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase.rpc("delete_unused_tags", {
+      const { error } = await supabase.rpc("delete_unused_tags", {
         p_user_id: user.id,
       });
 
       if (error) throw error;
 
-      console.log(`✅ Deleted ${data} unused tags`);
       await get().fetchTags(); // оновити локальний список
     } catch (err) {
       set({

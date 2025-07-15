@@ -7,7 +7,7 @@ export default function Toaster() {
 
   return (
     deleteToast.length > 0 && (
-      <div className="absolute right-[30px] top-[30px] w-[250px] max-h-11/12 overflow-hidden z-100">
+      <div className="absolute right-[30px] bottom-[30px] w-[250px] max-h-11/12 overflow-hidden z-100">
         {toastList.map((toast: ToastType) => {
           return (
             <Toast

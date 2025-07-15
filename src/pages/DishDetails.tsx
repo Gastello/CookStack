@@ -8,7 +8,6 @@ import Button from "../components/button/Button";
 import { EMOJI } from "../components/emoji/Emoji";
 import DishDetailsItem from "../components/dishDetailsItem/DishDetailsItem";
 import { useTagsStore, type TagType } from "../store/tagsStore";
-import { useToastStore } from "../store/toastStore";
 
 export default function DishDetails() {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +19,6 @@ export default function DishDetails() {
   const dishes = useDishesStore((s) => s.dishes);
   const updateDish = useDishesStore((s) => s.updateDish);
 
-  const { addToast } = useToastStore();
   const { deleteUnusedTags } = useTagsStore();
 
   const [dish, setDish] = useState<DishType | undefined>(undefined);
