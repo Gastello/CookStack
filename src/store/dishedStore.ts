@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { supabase } from "../auth/auth";
 import type { TagType } from "./tagsStore";
+import { useToastStore } from "./toastStore";
 
 export type DishType = {
   id: string;
@@ -43,6 +44,8 @@ type RPCDishCommon = {
 
 type RPCDishWithId = RPCDishCommon & { id: string };
 type RPCDishWithDishId = RPCDishCommon & { dish_id: string };
+
+const addToast = useToastStore.getState().addToast;
 
 function mapRPCDishesToDishType(
   data: Array<RPCDishWithId | RPCDishWithDishId>
@@ -88,7 +91,10 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!user) {
+        addToast(false, "User not authenticated");
+        throw new Error("User not authenticated");
+      }
 
       const { data, error } = await supabase.rpc("get_all_dishes_with_tags", {
         p_user_id: user.id,
@@ -111,11 +117,13 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
 
   addDish: async () => {
     set({ loading: true, error: null });
+
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+
+      if (!user) throw new Error("NOT_AUTHENTICATED");
 
       const { data, error } = await supabase.rpc(
         "create_or_update_dish_with_tags",
@@ -131,34 +139,54 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
           p_tag_ids: [],
         }
       );
-      if (error) throw error;
-      if (!data || data.length === 0) throw new Error("Failed to create dish");
+
+      if (error) throw new Error(error.message);
+      if (!data || data.length === 0) throw new Error("EMPTY_RESULT");
 
       const newDish = mapRPCDishesToDishType(data)[0];
 
+      addToast(true, "New dish created!");
       set((state) => ({
         dishes: [...state.dishes, newDish],
         loading: false,
       }));
     } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+
+      const toastMap: Record<string, string> = {
+        NOT_AUTHENTICATED: "Please log in to continue.",
+        EMPTY_RESULT: "Failed to create dish.",
+      };
+
+      addToast(false, toastMap[message] || "Something went wrong.");
       set({
-        error: err instanceof Error ? err.message : String(err),
+        error: message,
         loading: false,
       });
     }
   },
 
   updateDish: async (dish) => {
-    // Валідація required полів
-    if (!dish.name.trim()) {
-      throw new Error("Name cannot be empty");
+    const validationErrors: Record<string, boolean> = {
+      NAME_REQUIRED: !dish.name.trim(),
+      TIME_INVALID: !dish.time || isNaN(dish.time),
+      CALORIES_INVALID: !dish.calories || isNaN(dish.calories),
+    };
+
+    const firstError = Object.entries(validationErrors).find(
+      ([, invalid]) => invalid
+    );
+    if (firstError) {
+      const [code] = firstError;
+      const toastMap: Record<string, string> = {
+        NAME_REQUIRED: "Name cannot be empty.",
+        TIME_INVALID: "Time must be a valid number greater than zero.",
+        CALORIES_INVALID: "Calories must be a valid number greater than zero.",
+      };
+      addToast(false, toastMap[code]);
+      throw new Error(code);
     }
-    if (!dish.time || isNaN(dish.time)) {
-      throw new Error("Time must be a valid number greater than zero");
-    }
-    if (!dish.calories || isNaN(dish.calories)) {
-      throw new Error("Calories must be a valid number greater than zero");
-    }
+
     set({ loading: true, error: null });
 
     try {
@@ -181,7 +209,7 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
 
         if (unchanged) {
           set({ loading: false });
-          console.log("Dish already up to date");
+          addToast(false, "Dish already up to date!");
           return;
         }
       }
@@ -189,7 +217,7 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!user) throw new Error("NOT_AUTHENTICATED");
 
       const tagIds = dish.tags.map((t) => t.id);
 
@@ -208,8 +236,8 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
         }
       );
 
-      if (error) throw error;
-      if (!data || data.length === 0) throw new Error("Failed to update dish");
+      if (error) throw new Error(error.message);
+      if (!data || data.length === 0) throw new Error("EMPTY_RESULT");
 
       const updatedDish = mapRPCDishesToDishType(data)[0];
 
@@ -219,50 +247,66 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
         ),
         loading: false,
       }));
+      addToast(true, "Dish updated successfully");
     } catch (err) {
-      set({
-        error: err instanceof Error ? err.message : String(err),
-        loading: false,
-      });
+      const message = err instanceof Error ? err.message : String(err);
+
+      const toastMap: Record<string, string> = {
+        NOT_AUTHENTICATED: "Please log in to continue.",
+        EMPTY_RESULT: "Failed to update dish.",
+      };
+
+      addToast(false, toastMap[message] || "Something went wrong.");
+      set({ error: message, loading: false });
     }
   },
 
   removeDish: async (id) => {
     set({ loading: true, error: null });
+
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+
+      if (!user) throw new Error("NOT_AUTHENTICATED");
 
       const { error } = await supabase.rpc("delete_dish_with_tags", {
         p_dish_id: id,
         p_user_id: user.id,
       });
-      if (error) throw error;
+
+      if (error) throw new Error(error.message);
+
+      addToast(true, "Dish deleted successfully");
 
       set((state) => ({
         dishes: state.dishes.filter((d) => d.id !== id),
         loading: false,
       }));
     } catch (err) {
-      set({
-        error: err instanceof Error ? err.message : String(err),
-        loading: false,
-      });
+      const message = err instanceof Error ? err.message : String(err);
+
+      const toastMap: Record<string, string> = {
+        NOT_AUTHENTICATED: "Please log in to continue.",
+      };
+
+      addToast(false, toastMap[message] || "Failed to delete dish.");
+      set({ error: message, loading: false });
     }
   },
 
   makeFav: async (id) => {
     set({ loading: true, error: null });
+
     try {
       const dish = get().dishes.find((d) => d.id === id);
-      if (!dish) throw new Error("Dish not found");
+      if (!dish) throw new Error("DISH_NOT_FOUND");
 
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!user) throw new Error("NOT_AUTHENTICATED");
 
       const newFav = !dish.isFav;
       const tagIds = dish.tags.map((t) => t.id);
@@ -281,12 +325,18 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
           p_tag_ids: tagIds,
         }
       );
-      if (error) throw error;
-      if (!data || data.length === 0)
-        throw new Error("Failed to toggle favorite");
+
+      if (error) throw new Error(error.message);
+      if (!data || data.length === 0) throw new Error("EMPTY_RESULT");
 
       const updatedDish = mapRPCDishesToDishType(data)[0];
 
+      addToast(
+        true,
+        newFav
+          ? "Yum! This dish is now in your favorites."
+          : "Removed from favorites."
+      );
       set((state) => ({
         dishes: state.dishes
           .map((d) => (d.id === id ? updatedDish : d))
@@ -294,8 +344,17 @@ export const useDishesStore = create<DishesState & FilterState>((set, get) => ({
         loading: false,
       }));
     } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+
+      const toastMap: Record<string, string> = {
+        DISH_NOT_FOUND: "Dish not found.",
+        NOT_AUTHENTICATED: "Please log in to continue.",
+        EMPTY_RESULT: "Failed to toggle favorite.",
+      };
+
+      addToast(false, toastMap[message] || "Something went wrong.");
       set({
-        error: err instanceof Error ? err.message : String(err),
+        error: message,
         loading: false,
       });
     }
