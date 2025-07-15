@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDishesStore } from "../../store/dishedStore";
 import Button from "../button/Button";
 import { EMOJI } from "../emoji/Emoji";
@@ -24,8 +24,23 @@ export default function DishesFilter({
     "asc"
   );
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setFilterMenuVisible(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setFilterMenuVisible]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <Button
         icon={EMOJI.abacus}
         textSize="18px"
