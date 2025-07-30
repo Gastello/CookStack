@@ -15,6 +15,7 @@ export type MenuType = {
   description: string | null;
   time: number;
   calories: number;
+  is_fav: boolean;
   items: MenuItemType[];
 };
 
@@ -22,25 +23,34 @@ type MenusState = {
   menus: MenuType[];
   loading: boolean;
   error: string | null;
+  filter: {
+    showOnlyFavs: boolean;
+    maxCalories: number | null;
+    maxTime: number | null;
+    search: string;
+  };
 
   fetchMenus: () => Promise<void>;
   addMenu: () => Promise<void>;
   updateMenu: (menu: MenuType) => Promise<void>;
   removeMenu: (menu_id: string) => Promise<void>;
-
+  makeFav: (menu_id: string) => Promise<void>;
   getMenuById: (id: string) => MenuType | undefined;
+  getFiltredMenus: () => MenuType[];
+  setFilter: (partial: Partial<MenusState["filter"]>) => void;
 };
 
 const addToast = useToastStore.getState().addToast;
 
 function mapRPCMenusToMenuType(data: any[]): MenuType[] {
   return data.map((m) => ({
-    menu_id: m.menu_id,
-    name: m.name,
-    description: m.description,
-    time: m.time,
-    calories: m.calories,
-    items: (m.items ?? []).map((mi: any) => ({
+    menu_id: m.out_menu_id ?? m.id,
+    name: m.out_menu_name ?? m.name,
+    description: m.out_menu_description ?? m.description,
+    time: m.out_menu_time ?? m.time,
+    calories: m.out_menu_calories ?? m.calories,
+    is_fav: m.out_menu_is_fav ?? m.is_fav ?? false,
+    items: (m.out_items ?? m.items ?? []).map((mi: any) => ({
       id: mi.id,
       type: mi.type,
       value: mi.value,
@@ -54,6 +64,35 @@ export const useMenusStore = create<MenusState>((set, get) => ({
   loading: false,
   error: null,
 
+  filter: {
+    showOnlyFavs: false,
+    maxCalories: null,
+    maxTime: null,
+    search: "",
+  },
+
+  setFilter: (partial) => {
+    set((state) => ({
+      filter: { ...state.filter, ...partial },
+    }));
+  },
+
+  getFiltredMenus: () => {
+    const { menus, filter } = get();
+    return menus.filter((menu) => {
+      const matchFav = !filter.showOnlyFavs || menu.is_fav;
+      const matchCalories =
+        filter.maxCalories === null || menu.calories <= filter.maxCalories;
+      const matchTime =
+        filter.maxTime === null || menu.time <= filter.maxTime;
+      const matchSearch =
+        filter.search.trim() === "" ||
+        menu.name.toLowerCase().includes(filter.search.trim().toLowerCase());
+
+      return matchFav && matchCalories && matchTime && matchSearch;
+    });
+  },
+
   fetchMenus: async () => {
     set({ loading: true, error: null });
     try {
@@ -61,38 +100,21 @@ export const useMenusStore = create<MenusState>((set, get) => ({
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        addToast(false, "User not authenticated");
-        throw new Error("User not authenticated");
-      }
+      if (!user) throw new Error("NOT_AUTHENTICATED");
 
       const { data, error } = await supabase.rpc("get_all_menus_for_user", {
         p_user_id: user.id,
       });
 
       if (error) throw error;
-      if (!data) throw new Error("No menus returned");
+      if (!data) throw new Error("NO_MENUS");
 
-      // note: get_all_menus_for_user does NOT return items, so 
-      // optionally fetch each menu items later via get_menu_with_items, or
-      // add a new RPC that returns menus with items
-
-      // For now let's fetch menus without items
-      const menus: MenuType[] = (data as any[]).map((m) => ({
-        menu_id: m.id,
-        name: m.name,
-        description: m.description,
-        time: m.time,
-        calories: m.calories,
-        items: [],
-      }));
-
+      const menus = mapRPCMenusToMenuType(data);
       set({ menus, loading: false });
     } catch (err) {
-      set({
-        error: err instanceof Error ? err.message : String(err),
-        loading: false,
-      });
+      const message = err instanceof Error ? err.message : String(err);
+      addToast(false, message);
+      set({ error: message, loading: false });
     }
   },
 
@@ -105,12 +127,11 @@ export const useMenusStore = create<MenusState>((set, get) => ({
 
       if (!user) throw new Error("NOT_AUTHENTICATED");
 
-      // створюємо порожнє меню з дефолтними значеннями і без item-ів
       const { data, error } = await supabase.rpc("create_or_update_menu_with_items", {
         p_menu_id: null,
         p_user_id: user.id,
-        p_name: "New menu",
-        p_description: null,
+        p_menu_name: "New menu",
+        p_menu_description: null,
         p_items: JSON.stringify([]),
       });
 
@@ -118,19 +139,15 @@ export const useMenusStore = create<MenusState>((set, get) => ({
       if (!data || data.length === 0) throw new Error("EMPTY_RESULT");
 
       const newMenu = mapRPCMenusToMenuType(data)[0];
+      addToast(true, "Menu created!");
 
-      addToast(true, "New menu created!");
       set((state) => ({
         menus: [...state.menus, newMenu],
         loading: false,
       }));
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      const toastMap: Record<string, string> = {
-        NOT_AUTHENTICATED: "Please log in to continue.",
-        EMPTY_RESULT: "Failed to create menu.",
-      };
-      addToast(false, toastMap[message] || "Something went wrong.");
+      addToast(false, message);
       set({ error: message, loading: false });
     }
   },
@@ -143,18 +160,19 @@ export const useMenusStore = create<MenusState>((set, get) => ({
       } = await supabase.auth.getUser();
       if (!user) throw new Error("NOT_AUTHENTICATED");
 
-      // Передаємо items як JSONB string
-      const itemsJson = JSON.stringify(menu.items.map((i) => ({
-        type: i.type,
-        value: i.value,
-        position: i.position,
-      })));
+      const itemsJson = JSON.stringify(
+        menu.items.map((i) => ({
+          type: i.type,
+          value: i.value,
+          position: i.position,
+        }))
+      );
 
       const { data, error } = await supabase.rpc("create_or_update_menu_with_items", {
         p_menu_id: menu.menu_id,
         p_user_id: user.id,
-        p_name: menu.name,
-        p_description: menu.description,
+        p_menu_name: menu.name,
+        p_menu_description: menu.description,
         p_items: itemsJson,
       });
 
@@ -170,14 +188,10 @@ export const useMenusStore = create<MenusState>((set, get) => ({
         loading: false,
       }));
 
-      addToast(true, "Menu updated successfully");
+      addToast(true, "Menu updated");
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      const toastMap: Record<string, string> = {
-        NOT_AUTHENTICATED: "Please log in to continue.",
-        EMPTY_RESULT: "Failed to update menu.",
-      };
-      addToast(false, toastMap[message] || "Something went wrong.");
+      addToast(false, message);
       set({ error: message, loading: false });
     }
   },
@@ -197,24 +211,50 @@ export const useMenusStore = create<MenusState>((set, get) => ({
 
       if (error) throw error;
 
-      addToast(true, "Menu deleted successfully");
-
       set((state) => ({
         menus: state.menus.filter((m) => m.menu_id !== menu_id),
         loading: false,
       }));
+
+      addToast(true, "Menu deleted");
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      const toastMap: Record<string, string> = {
-        NOT_AUTHENTICATED: "Please log in to continue.",
-      };
-      addToast(false, toastMap[message] || "Failed to delete menu.");
+      addToast(false, message);
+      set({ error: message, loading: false });
+    }
+  },
+
+  makeFav: async (menu_id) => {
+    set({ loading: true, error: null });
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("NOT_AUTHENTICATED");
+
+      const { error } = await supabase.rpc("toggle_menu_fav", {
+        p_menu_id: menu_id,
+        p_user_id: user.id,
+      });
+
+      if (error) throw error;
+
+      set((state) => ({
+        menus: state.menus.map((m) =>
+          m.menu_id === menu_id ? { ...m, is_fav: !m.is_fav } : m
+        ),
+        loading: false,
+      }));
+
+      addToast(true, "Favorite toggled");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      addToast(false, message);
       set({ error: message, loading: false });
     }
   },
 
   getMenuById: (id) => {
-    const { menus } = get();
-    return menus.find((m) => m.menu_id === id);
+    return get().menus.find((m) => m.menu_id === id);
   },
 }));
