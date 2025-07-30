@@ -6,7 +6,7 @@ import {
 } from "@dnd-kit/core";
 import { useState } from "react";
 
-type MenuItemType = "title" | "text" | "image" | "dish" | "emoji";
+type MenuItemType = "title" | "text" | "image" | "dish";
 
 type MenuItemBlock = {
   id: string;
@@ -47,7 +47,7 @@ export default function MenusDashboard() {
           id: crypto.randomUUID(),
           children: [newItem],
         };
-        newRows.splice(dropIndex + 1, 0, newRow);
+        newRows.splice(dropIndex, 0, newRow);
         return newRows;
       });
     }
@@ -72,7 +72,7 @@ export default function MenusDashboard() {
 }
 
 function Sidebar() {
-  const types: MenuItemType[] = ["title", "text", "image", "dish", "emoji"];
+  const types: MenuItemType[] = ["title", "text", "image", "dish"];
   return (
     <div className="flex flex-col gap-2 w-[120px]">
       {types.map((type) => (
