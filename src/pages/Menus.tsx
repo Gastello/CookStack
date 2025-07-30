@@ -2,6 +2,7 @@ import Button from "../components/button/Button";
 import DashboardHeader from "../components/dashboardHeader/DashboardHeader";
 import { EMOJI } from "../components/emoji/Emoji";
 import EmptyDashboard from "../components/emptyDashboard/EmptyDashboard";
+import MenusDashboard from "../components/menusDashboard/MenusDashboard";
 
 export default function Menus() {
   return (
@@ -18,12 +19,16 @@ export default function Menus() {
         />
       </DashboardHeader>
 
-      <EmptyDashboard
-        emoji={EMOJI.memo}
-        title="No menus yet"
-        subtitle="Start by creating your first menu to organize your meals"
-        btnText="Create your first menu"
-      />
+      {true ? (
+        <MenusDashboard />
+      ) : (
+        <EmptyDashboard
+          emoji={EMOJI.memo}
+          title="No menus yet"
+          subtitle="Start by creating your first menu to organize your meals"
+          btnText="Create your first menu"
+        />
+      )}
     </div>
   );
 }
