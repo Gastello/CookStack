@@ -79,18 +79,20 @@ export const useMenusStore = create<MenusState>((set, get) => ({
 
   getFiltredMenus: () => {
     const { menus, filter } = get();
-    return menus.filter((menu) => {
+    const filtered = menus.filter((menu) => {
       const matchFav = !filter.showOnlyFavs || menu.is_fav;
       const matchCalories =
         filter.maxCalories === null || menu.calories <= filter.maxCalories;
-      const matchTime =
-        filter.maxTime === null || menu.time <= filter.maxTime;
+      const matchTime = filter.maxTime === null || menu.time <= filter.maxTime;
       const matchSearch =
         filter.search.trim() === "" ||
         menu.name.toLowerCase().includes(filter.search.trim().toLowerCase());
 
       return matchFav && matchCalories && matchTime && matchSearch;
     });
+
+    // Додаємо сортування: обрані зверху
+    return filtered.sort((a, b) => Number(b.is_fav) - Number(a.is_fav));
   },
 
   fetchMenus: async () => {
@@ -127,13 +129,16 @@ export const useMenusStore = create<MenusState>((set, get) => ({
 
       if (!user) throw new Error("NOT_AUTHENTICATED");
 
-      const { data, error } = await supabase.rpc("create_or_update_menu_with_items", {
-        p_menu_id: null,
-        p_user_id: user.id,
-        p_menu_name: "New menu",
-        p_menu_description: null,
-        p_items: JSON.stringify([]),
-      });
+      const { data, error } = await supabase.rpc(
+        "create_or_update_menu_with_items",
+        {
+          p_menu_id: null,
+          p_user_id: user.id,
+          p_menu_name: "New menu",
+          p_menu_description: null,
+          p_items: JSON.stringify([]),
+        }
+      );
 
       if (error) throw error;
       if (!data || data.length === 0) throw new Error("EMPTY_RESULT");
@@ -168,13 +173,16 @@ export const useMenusStore = create<MenusState>((set, get) => ({
         }))
       );
 
-      const { data, error } = await supabase.rpc("create_or_update_menu_with_items", {
-        p_menu_id: menu.menu_id,
-        p_user_id: user.id,
-        p_menu_name: menu.name,
-        p_menu_description: menu.description,
-        p_items: itemsJson,
-      });
+      const { data, error } = await supabase.rpc(
+        "create_or_update_menu_with_items",
+        {
+          p_menu_id: menu.menu_id,
+          p_user_id: user.id,
+          p_menu_name: menu.name,
+          p_menu_description: menu.description,
+          p_items: itemsJson,
+        }
+      );
 
       if (error) throw error;
       if (!data || data.length === 0) throw new Error("EMPTY_RESULT");
